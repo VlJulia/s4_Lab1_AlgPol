@@ -14,7 +14,12 @@ struct TMonom
 
 	void SetIndex(int ival) { index = ival; }
 	int GetIndex(void) { return index; }
-
+	TMonom operator+(TMonom other);
+	friend TMonom operator*(double c, TMonom other);
+	friend TMonom operator/(double c, TMonom other);
+	TMonom operator-(TMonom other);
+	TMonom operator/(TMonom other);
+	TMonom operator*(TMonom other);
 
 	bool operator==(TMonom& other) { 
 		return ((index == other.index) && (coef == other.coef));
@@ -68,7 +73,7 @@ TMonom::TMonom(string s) {
 		}
 	for (; tmp < s.size(); tmp++) str[tmp] = ' ';
 	index = 0;
-	coef = 0;
+	coef = 1;
 	int p = 1;//-coef or +
 	int i = 0;
 	int t = 0;
@@ -127,4 +132,46 @@ TMonom  TMonom::operator=(const TMonom& other) {
 	this->coef = other.coef;
 	this->index = other.index;
 	return *this;
+};
+
+TMonom TMonom::operator+(TMonom other) {
+	if (index != other.index) throw "different degrees";
+	TMonom ans;
+	ans.SetCoef(coef + other.coef);
+	ans.index = index;
+	return ans;
+
+};
+TMonom TMonom::operator-(TMonom other) {
+	if (index != other.index) throw "different degrees";
+	TMonom ans;
+	ans.SetCoef(coef - other.coef);
+	ans.index = index;
+	return ans;
+
+};
+TMonom TMonom::operator/(TMonom other) {
+	TMonom ans;
+	if (other.coef == 0) throw "division by 0";
+	ans.SetCoef(coef/other.coef);
+	ans.index = index-other.index;
+	return ans;
+};
+TMonom TMonom::operator*(TMonom other) {
+	TMonom ans;
+	ans.SetCoef(coef * other.coef);
+	ans.index = index + other.index;
+	return ans;
+};
+TMonom operator*(double c, TMonom other) {
+	TMonom ans;
+	ans.SetCoef(other.coef*c);
+	ans.index = other.index;
+	return ans;
+};
+TMonom operator/(double c, TMonom other) {
+	TMonom ans;
+	ans.SetCoef(other.coef / c);
+	ans.index = other.index;
+	return ans;
 };

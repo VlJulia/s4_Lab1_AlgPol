@@ -49,7 +49,7 @@ public:
 		os << "length = " << obj.length << endl;
 		TNode<T>* tmp = obj.pFirst;
 		os << "[" << endl;
-		while (tmp != obj.pStop)
+		for(int i=0;i<obj.length;i++)
 		{
 
 			os << tmp->value;// << " next" << tmp->pNext;
@@ -114,8 +114,9 @@ void TList<T>::InsertFirst(T item)
 		TNode<T>* tmp= new TNode<T>();
 		tmp->pNext = pFirst;
 		tmp->value = item;
-		if (pCurrent == pFirst) { pPrevious = tmp; pCurrent = pFirst; }
+		if (pCurrent == pFirst) {pPrevious = tmp;}
 		pFirst = tmp;
+		tmp = nullptr;
 	}
 	length++;
 
@@ -130,6 +131,7 @@ void TList<T>::InsertLast(T item)
 	tmp->value = item;
 	pLast->pNext = tmp;
 	pLast = tmp;
+	tmp = nullptr;
 	length++;
 }
 template <class T>
@@ -140,12 +142,11 @@ void TList<T>::InsertCurrent(T item)
 		return;
 	}
 	if (pCurrent == pFirst) { InsertFirst(item); return; }
-	TNode<T>* tmp = new TNode<T>();
-
-	tmp->value = item;
-	tmp->pNext = pCurrent;
-	pPrevious->pNext = tmp;
-	pPrevious = tmp;
+	TNode<T>* tmp = pPrevious;
+	pPrevious = new TNode<T>();
+	pPrevious->value = item;
+	pPrevious->pNext = pCurrent;
+	tmp->pNext = pPrevious;
 	length++;
 
 }
@@ -167,6 +168,8 @@ void TList<T>::DeleteFirst()
 	pFirst = pFirst->pNext;
 	tmp = NULL;
 	length--;
+
+
 }
 
 template <class T>
@@ -175,9 +178,10 @@ void TList<T>::DeleteCurrent()
 	if (length == 0) throw "is Empty";
 
 	if (pCurrent==pStop) throw "Currend in end";
-	if ((pCurrent == pFirst)&&(length==1)) { DeleteFirst(); length--;  return; }
+	if ((pCurrent == pFirst)&&(length==1)) {
+		DeleteFirst(); return; }
 	if (pCurrent->pNext == pStop) {
-		pLast = pPrevious; 
+		pLast->copy(pPrevious); 
 		pLast->pNext = pStop;
 		delete pCurrent;
 		Reset();
@@ -185,12 +189,11 @@ void TList<T>::DeleteCurrent()
 		return;
 	
 	}
+
 	TNode<T>* tmp = pCurrent->pNext;
-	delete pCurrent;
-	pCurrent = tmp;
-	pPrevious->pNext = pCurrent;
+	pCurrent->pNext= tmp->pNext;
+	pCurrent->value = tmp->value;
 	//std::cout << pCurrent<<"ddd"<<endl;
-	tmp=nullptr;
 	length--;
 }
 
@@ -214,18 +217,17 @@ template <class T>
 void TList<T>::GoNext()
 {
 	//std::cout << "sasaa" << *this << this << endl;
-	try {
-	if (IsEnd()) throw "is end";
+		if (IsEnd()) throw "is end";
 		pPrevious = pCurrent;
 		pCurrent = pCurrent->pNext;
-	}
-	catch (...) {}
 }
 
 template <class T>
 bool TList<T>::IsEnd()
 {
-	if (IsEmpty()) return 1;
+	if (length == 0) return true;
+	if (IsEmpty()) return true;
+	if (pCurrent == pLast) return true;
 	if (pCurrent == pStop) return true;
 	if (pCurrent->pNext == pStop) return true;
 	return false;
