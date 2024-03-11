@@ -27,7 +27,7 @@ public:
 	void GoNext();
 	void Reset();
 	void Clear();
-
+	THeadList<T>& operator=(THeadList<T>& other);
 };
 template <class T>
 void THeadList<T>::Clear() {
@@ -38,6 +38,24 @@ void THeadList<T>::Clear() {
 	TList<T>::pFirst = TList<T>::pStop;
 	//std::cout << "Clear END  " << *this;
 	TList<T>::length = 0;
+}
+
+template<class T>
+THeadList<T>& THeadList<T>::operator=(THeadList<T>& other)
+{
+
+	TList<T>::operator=(other);
+	if (pHead == nullptr) {
+		pHead = new TNode<T>();
+		pHead->pNext = TList<T>::pFirst;
+	}
+
+	if (pCurrent == pFirst) TList<T>::pPrevious = pHead;
+	if (TList<T>::pLast == nullptr) {
+		TList<T>::pLast = new TNode<T>();
+	}
+	 TList<T>::pLast->pNext = pHead;
+	return *this;
 }
 
 template<class T>

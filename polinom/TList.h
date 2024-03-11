@@ -39,14 +39,16 @@ public:
 
 	T GetCurrentItem();
 	void SetCurrentItem(T item) { pCurrent->value = item; }
+	void Clear();
 
+	TList<T>& operator=(TList<T>& other);
 
 	friend ostream& operator<<(ostream& os, const TList<T>& obj) {
 		//os << &obj;
 		if (obj.length == 0) { os << "length = 0 \n[\n]" << endl; return os; }
+		os << "length = " << obj.length << endl;
 		try { os << "first = " << obj.pFirst->value << endl; } catch (...) { os << "no first" << endl; }
 		try { os << "last = " << obj.pLast->value << endl; } catch (...) { os << "no last" << endl; }
-		os << "length = " << obj.length << endl;
 		TNode<T>* tmp = obj.pFirst;
 		os << "[" << endl;
 		for(int i=0;i<obj.length;i++)
@@ -206,6 +208,21 @@ T TList<T>::GetCurrentItem()
 	return pCurrent->value;
 }
 
+template<class T>
+TList<T>& TList<T>::operator=(TList<T>& other)
+{
+	Clear();
+	if (other.IsEmpty()) { return *this; }
+	TNode<T>* tmp = other.pFirst;
+	for (int i = 0; i < other.length; i++) {
+		InsertLast(tmp->value);
+		if (other.pCurrent == tmp) pCurrent = pLast;
+		if (other.pPrevious == tmp) pPrevious = pLast;
+		tmp = tmp->pNext;
+	}
+	return *this;
+}
+
 template <class T>
 void TList<T>::Reset()
 {
@@ -233,6 +250,14 @@ bool TList<T>::IsEnd()
 	return false;
 }
 
+template <class T>
+void TList<T>::Clear() {
+	Reset();
+	while (length > 0) { DeleteFirst(); }
+	pCurrent = pStop; pPrevious = pStop; pLast = pStop;
+	pFirst = pStop;
+	length = 0;
+}
 
 
 

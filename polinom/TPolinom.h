@@ -307,6 +307,9 @@ TPolinom TPolinom::SubPolinom(TPolinom& other) {
 }; //  вычитание полинома
 
 TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
+
+	
+
 	if (other.IsEmpty()) return other;
 	if (IsEmpty()) return *this;
 
@@ -319,17 +322,27 @@ TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 	other.Reset();
 	cp.Reset();
 	int oper = 0;
+
+
 	while (!cp.IsEmpty()) {//    this/other
+
 		factor = (cp.GetCurrentItem() / fmn);
 		
 		ans.AddMonom(factor);
 
+		//cout << "\nafter operator cp\n" << cp << endl;
+		//cout << "\nfactor\n" << factor << endl;
+
 		tmp.MultMonom(factor);
 		cp.SubPolinom(tmp);
+
 		tmp = other;
+		//cout << "\noperator tmp\n" << tmp << endl;
 		oper++;
 		if (oper > (other.length+5)) break;
 	}
+
+
 	ost = cp;
 	return ans;
 
@@ -361,6 +374,7 @@ TPolinom TPolinom::operator/(TPolinom other)
 
 	TPolinom tmp;
 	TPolinom ans(*this);
+	
 	ans.Division(other, tmp);
 	if (!tmp.IsEmpty()) {
 		throw "impossible division operation without remainder";

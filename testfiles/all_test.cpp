@@ -11,6 +11,7 @@ int main()
    TPolinom p2("XYZ");
    TPolinom p3;
     cout << "\n p\n" << p << endl;
+    cout << "\n p2\n" << p2 << endl;
 
     cout << p / p2;
     cout << "First without throws\n\n";
@@ -23,12 +24,13 @@ int main()
         cout << p / p2;
         cout << "shoud be throw\n\n";
     }
-    catch (const string a) {
-        if (a == "impossible division operation without remainder")
+    catch (const char* a) {
+        string s(a);
+        if (s == "impossible division operation without remainder")
             cout << "success!!"<<endl;
         else
         {
-            cout << a;
+            cout << s;
         }
     }
     
@@ -57,6 +59,9 @@ int main()
   
     //p.AddPolinom("3X4Y7Z8 - 6X1Y1Z1");
     */
+    char aaaaaaaa;
+    cin >> aaaaaaaa;
+    return 0;
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
