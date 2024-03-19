@@ -12,10 +12,10 @@ template <class Tn, class Tp>
 class Table
 {
 protected: 
-	unsigned int size;
+	unsigned int size=0;
 public:
-	virtual void AddPolinom(Polinom<Tn,Tp> pol);
-	virtual void DelPolinom(std::string polinom_name);
+	virtual bool AddPolinom(Polinom<Tn,Tp> pol);
+	virtual bool DelPolinom(std::string polinom_name);
 	virtual Polinom<Tn,Tp> FindPolinom(std::string polinom_name);
 	virtual bool PolinomExist(std::string polinom_name);
 };
