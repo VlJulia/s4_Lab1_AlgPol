@@ -11,16 +11,16 @@ struct  Polinom
 template <class T>
 class Table
 {
-protected: unsigned int size=0;//текущий размер
-		 unsigned int max_data_count = 0;//сколько всего может быть записей
+protected: unsigned int size=0;//ГІГҐГЄГіГ№ГЁГ© Г°Г Г§Г¬ГҐГ°
+		 unsigned int max_data_count = 0;//Г±ГЄГ®Г«ГјГЄГ® ГўГ±ГҐГЈГ® Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј Г§Г ГЇГЁГ±ГҐГ©
 public:
-	int GetDataCount()   const; // количество записей
-	bool IsEmpty() const;  // пуста?
-	bool IsFull() const = 0;                       // заполнена?
-	//навигация 
-	virtual int Reset(void) = 0; // установить на первую запись
-	virtual int IsTabEnded(void) const = 0; // таблица завершена?
-	virtual int GoNext(void) = 0; // переход к следующей записи
+	int GetDataCount()   const; // ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г§Г ГЇГЁГ±ГҐГ©
+	bool IsEmpty() const;  // ГЇГіГ±ГІГ ?
+	bool IsFull() const;                       // Г§Г ГЇГ®Г«Г­ГҐГ­Г ?
+	//Г­Г ГўГЁГЈГ Г¶ГЁГї 
+	virtual int Reset(void) = 0; // ГіГ±ГІГ Г­Г®ГўГЁГІГј Г­Г  ГЇГҐГ°ГўГіГѕ Г§Г ГЇГЁГ±Гј
+	virtual int IsTabEnded(void) const = 0; // ГІГ ГЎГ«ГЁГ¶Г  Г§Г ГўГҐГ°ГёГҐГ­Г ?
+	virtual int GoNext(void) = 0; // ГЇГҐГ°ГҐГµГ®Г¤ ГЄ Г±Г«ГҐГ¤ГіГѕГ№ГҐГ© Г§Г ГЇГЁГ±ГЁ
 	virtual std::string GetKey(void) const = 0;
 	virtual T GetValuePtr(void) const = 0;
 	//
@@ -48,7 +48,7 @@ bool Table<T>::IsEmpty() const {
 	return size == 0;
 }
 template<class T>
-inline bool Table<T>::IsFull() const
+bool Table<T>::IsFull() const
 {
 	return max_data_count==size ;
 }
