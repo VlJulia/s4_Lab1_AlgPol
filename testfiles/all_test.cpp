@@ -1,68 +1,62 @@
-﻿// VrPr2.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-
-#include <iostream>
+﻿#include <iostream>
 #include "Table.h"
+#include "TPolinom.h"
+#include "Tree.h"
 using namespace std;
 int main()
 {
-   TPolinom p("3X3Y3Z3 - 2X2Y2Z2 + 1XYZ");
-   
-   TPolinom p2("XYZ");
-   TPolinom p3;
-    cout << "\n p\n" << p << endl;
-    cout << "\n p2\n" << p2 << endl;
+   // Tree<Polinom<std::string, TPolinom>> a(10);
+    Tree<Polinom<string, int>> a(10);
+    Polinom<string, int> tmp;
+    tmp.name = "name1";
+    tmp.polinom = 1;
+    a.Add(tmp); 
+    cout << a.GetDataCount();
+    tmp.name = "name6";
+    tmp.polinom = 2;
+    a.Add(tmp);
+    tmp.name = "name3";
+    tmp.polinom = 3;
+    a.Add(tmp);
+    tmp.name = "name0";
+    tmp.polinom = 4;
+    a.Add(tmp);
+    tmp.name = "name4";
+    tmp.polinom = 5;
+    a.Add(tmp);
+    tmp.name = "name2";
+    tmp.polinom = 6;
+    a.Add(tmp);
+    tmp.name = "name2";
+    tmp.polinom = 7;
+    a.Add(tmp);
+    tmp.name = "name8";
+    tmp.polinom = 8;
+    a.Add(tmp);
+    tmp.name = "name9";
+    tmp.polinom = 9;
+    a.Add(tmp);
+    tmp.name = "name7";
+    tmp.polinom = 10;
+    a.Add(tmp);
+    a.Delete("name8");
+    a.Delete("name1");
+    cout << a<<endl;
+    a.Delete("name0");
+    cout << "\ndelete" << endl;
 
-    cout << p / p2;
-    cout << "First without throws\n\n";
-    p2.AddMonom(TMonom(1,0,0,0));
-    cout << "\n p2\n" << p2 << endl;
-    cout << p.Division(p2,p3);
-    cout << "Second without throws\n\n";
-    cout << "\n p2\n" << p2 << endl;
-    try {
-        cout << p / p2;
-        cout << "shoud be throw\n\n";
-    }
-    catch (const char* a) {
-        string s(a);
-        if (s == "impossible division operation without remainder")
-            cout << "success!!"<<endl;
-        else
-        {
-            cout << s;
-        }
-    }
-    
-   /*
-    TPolinom p3;
 
-    
-    p3.AddMonom(TMonom(1, 9, 3, 4));
-    cout << "\n p3\n" << p3 << endl;
-    p3.AddMonom(TMonom(1, 2, 9, 4));
-    cout << "\n p3\n" << p3 << endl;
-    p3.AddMonom(TMonom(1,2,3,4));
-    p3.Reset();
-    p3.AddMonom(TMonom(1, 5, 3, 4));
-    p3.Reset();
-    p3.AddMonom(TMonom(1, 9, 3, 4));
-    p3.Reset();
-    p3.GoNext();
-    cout << "\n p3\n" << p3 << endl;
-    p3.GoNext();
-    cout << "\n p3\n" << p3 << endl;
-    p3.DeleteCurrent();
-    cout << "\n p3\n" << p3 << endl;
-    p3.GoNext();
-    
-  
-    //p.AddPolinom("3X4Y7Z8 - 6X1Y1Z1");
-    */
     char aaaaaaaa;
+
+    cout <<"write any char to continue...    ";
+    cin >> aaaaaaaa;
+    cout << a;
+
+    cout << "END\n";
     cin >> aaaaaaaa;
     return 0;
 }
+
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
 // Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
