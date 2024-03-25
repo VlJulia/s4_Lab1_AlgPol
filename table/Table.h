@@ -46,7 +46,7 @@ public:
 			//std::cout << tab.GetValuePtr()<<endl;
 			os << tab.GetValuePtr() << endl;
 		}
-		os << tab.GetValuePtr() << endl;
+		if (!(tab.IsEmpty())) os << tab.GetValuePtr() << endl;
 		return os;
 	}
 };
