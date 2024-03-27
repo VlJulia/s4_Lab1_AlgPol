@@ -100,30 +100,6 @@ TPolinom::TPolinom(string str)
 
 }
 
-//TPolinom& TPolinom::operator=(TPolinom& other)
-//{
-//	//std::cout << "-----1----" << endl;
-//	Clear();
-//	if (other.IsEmpty()) return *this;
-//	TNode<TMonom>* st = other.pCurrent;
-//	TMonom tmp;
-//	other.Reset();
-//	cout<<" other is " << other;
-//	while (!other.IsEnd()) {
-//		tmp = other.pCurrent->value;
-//		cout << " TMP MONOM " << tmp;
-//		InsertLast(tmp);
-//		other.GoNext();
-//	}
-//	tmp = other.pCurrent->value;
-//	InsertLast(tmp);
-//	other.GoNext();
-//	if ()
-//	while (other.pCurrent != st) { other.GoNext(); GoNext(); }
-//	length = other.length;
-//	st = nullptr;
-//	return *this;
-//}
 
 void TPolinom::AddMonom(TMonom monom)
 {

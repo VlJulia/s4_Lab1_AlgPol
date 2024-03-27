@@ -13,6 +13,7 @@ if(NOT CMAKE_BUILD_TYPE) # проверка имеющихся у компиля
   set(CMAKE_BUILD_TYPE Release) #Если нет то устанавливаем Release
 endif()
 
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/table)
 add_subdirectory(table)
 
@@ -23,8 +24,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/calculator)
 add_subdirectory(calculator)
 
 add_subdirectory(testfiles)
-
-
 
 #file(GLOB hdrs "*.h*") #Добавляем в переменную hdrs все файлы с расширением .h
 #file(GLOB srcs "*.cpp") #Добавляем в переменную srcs все файлы с расширением .cpp

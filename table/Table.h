@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "..\polinom\TPolinom.h"
 
 template <class Tn, class Tp>
 struct  Polinom//trec
@@ -8,7 +7,7 @@ struct  Polinom//trec
 	Tn name;
 	Tp polinom;
 
-	friend ostream& operator<<(ostream& os, Polinom& p)
+	friend std::ostream& operator<<(std::ostream& os, Polinom& p)
 	{
 		os << " Key: " << p.name << " val: " << p.polinom;
 		return os;
@@ -38,9 +37,9 @@ public:
 	virtual bool Exist(std::string key)=0;
 
 public:
-	friend ostream& operator<<(ostream& os, Table& tab)
+	friend std::ostream& operator<<(std::ostream& os, Table& tab)
 	{
-		cout << "Table printing" << endl;
+		std::cout << "Table printing" << endl;
 		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
 		{
 			//std::cout << tab.GetValuePtr()<<endl;

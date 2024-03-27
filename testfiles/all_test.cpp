@@ -1,7 +1,7 @@
-﻿#include <iostream>
-#include "Table.h"
-#include "TPolinom.h"
+﻿/*#pragma once
+#include <iostream>
 #include "Tree.h"
+#include "TPolinom.h"
 using namespace std;
 int main()
 {
@@ -114,6 +114,7 @@ int main()
     cin >> aaaaaaaa;
     return 0;
 }
+*/
 
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

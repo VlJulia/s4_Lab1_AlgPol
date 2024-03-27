@@ -1,7 +1,6 @@
+#pragma once
 #include <iostream>
 #include "Table.h"
-#include "..\polinom\TPolinom.h"
-
 template <class T>
 struct TrNode
 {
@@ -12,7 +11,6 @@ public:
 
 	T val;
 	int h = 0;
-
 	void newH() {
 		int a = 0;
 		if (RTrnode != NULL) a += RTrnode->h + 1;
@@ -156,6 +154,7 @@ public:
 	 int GetBalance() {
 		 return radix->dh();
 	 };
+	 bool operator==(Tree other) { return 1; }
 private:
 	void GoDownLeft();
 	int FPCLCheck(TrNode<T>* tmp);
@@ -430,7 +429,6 @@ int Tree<T>::DeleteRec(std::string key, TrNode<T>* t) {//1 -минус уровень 0 -уро
 
 template<class T>
 bool Tree<T>::Delete(std::string key) {
-	std::cout << "size = "<<size << endl;
 	if ((radix == NULL)||(size==0))	return false;
 	if (size == 1) { delete radix; radix == NULL;  size--; return 1; }
 	if (radix->val.name == key) {
