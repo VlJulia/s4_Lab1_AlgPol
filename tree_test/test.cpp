@@ -9,11 +9,10 @@ TEST(Tree, Created_tree_is_empty) {
 	EXPECT_EQ(a.IsEmpty(), 1);
 }
 
-TEST(Tree, Created_polinom_with_one_monom_is_not_empty) {
+TEST(Tree, is_not_empty) {
 	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k; p.name = "name1";
+	Polinom<string, int> p; p.polinom =10;
+	p.name = "name1";
 	a.Add(p);
 	EXPECT_EQ(a.IsEmpty(), 0);
 }

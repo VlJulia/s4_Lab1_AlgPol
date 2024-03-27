@@ -7,6 +7,8 @@ struct  Polinom//trec
 	Tn name;
 	Tp polinom;
 
+
+	bool operator==(Polinom<Tn, Tp> other) { return ((name==other.name)&&(polinom==other.polinom)); }
 	friend std::ostream& operator<<(std::ostream& os, Polinom& p)
 	{
 		os << " Key: " << p.name << " val: " << p.polinom;

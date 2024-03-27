@@ -446,14 +446,14 @@ T Tree<T>::Find(std::string key) {
 		TrNode<T>* tmp = radix;
 		while (true) {
 			// right way
-			if (tmp == NULL) throw "is empty";
+			if (tmp == NULL) throw "cant find";
 			if (key > tmp->val.name) {
-				tmp = radix->RTrnode;
+				tmp = tmp->RTrnode;
 				continue;
 			}
 			//left way
 			if (key < tmp->val.name) {
-				tmp = radix->LTrnode;
+				tmp = tmp->LTrnode;
 				continue;
 			}
 			if (key == tmp->val.name) {

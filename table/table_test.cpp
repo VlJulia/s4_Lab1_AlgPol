@@ -1,11 +1,14 @@
 #include <iostream>
-#include "Tree.h"
+#include "HashTblCh.h"
 
 using namespace std;
 int main()
 {
-
+    HashTblCh<Polinom<string, int>> a(20);
     char aaaaaaaa;
+    int l;
     cin >> aaaaaaaa;
+    cin >> aaaaaaaa;
+    cin >> l;
     return 0;
 }
