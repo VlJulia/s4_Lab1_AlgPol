@@ -23,7 +23,11 @@ add_subdirectory(polinom)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/calculator) 
 add_subdirectory(calculator)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/testfiles) 
 add_subdirectory(testfiles)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/gtest)
+add_subdirectory(gtest)
 
 #file(GLOB hdrs "*.h*") #Добавляем в переменную hdrs все файлы с расширением .h
 #file(GLOB srcs "*.cpp") #Добавляем в переменную srcs все файлы с расширением .cpp

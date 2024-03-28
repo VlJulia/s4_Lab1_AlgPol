@@ -1,6 +1,7 @@
 file(GLOB hdrs "*.h*")
 file(GLOB srcs "*.cpp")
 
-add_executable(${testfiles} ${srcs} ${hdrs}) 
+#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty")
 
-target_link_libraries(${testfiles} ${table} ${polinom} ${calculator}) #Подключаем к проекту с именем ${vector} библиотеки с именами ${vectorlib} и gtest
+add_executable(${testfiles} ${srcs} ${hdrs}) #Создаем проект с именем из переменной ${vectortest}, в него добавляются файлы из переменных ${srcs} и ${hdrs}
+target_link_libraries(${testfiles} ${polinom} ${table} gtest) #Подключаем к проекту с именем ${vector} библиотеки с именами ${vectorlib} и gtest
