@@ -14,9 +14,9 @@ protected:
 	string postfix;
 	TStack<TPolinom> st;
 	TStack<string> sts;
-	Table<string, TPolinom>* tb;
+	Table<Polinom<string,TPolinom>>* tb;
 public:
-	TCalculator(Table<string, TPolinom>* a) :st(50), sts(50)
+	TCalculator(Table<Polinom<string, TPolinom>>* a) :st(50), sts(50)
 	{
 		tb = a;
 		infix = "";
@@ -141,11 +141,11 @@ void TCalculator::ToPostfix() {
 		string tmp = c;
 		string tmp2 = tmp;
 		while ((infix[j] != ' ')&&(j != infix.size())) {
-			if (tb->PolinomExist(tmp)) tmp2 = tmp;
+			if (tb->Exist(tmp)) tmp2 = tmp;
 			tmp += infix[j];
 			j++;
 		}
-		if (tb->PolinomExist(tmp2)) {
+		if (tb->Exist(tmp2)) {
 			flag = false;
 			i = j;
 			postfix += tmp2;
@@ -231,12 +231,12 @@ TPolinom TCalculator::CalcPostfix() {
 		string tmp2 = tmp;
 
 		while ((postfix[j] != ' ') && (j != postfix.size())) {
-			if (tb->PolinomExist(tmp)) tmp2 = tmp;
+			if (tb->Exist(tmp)) tmp2 = tmp;
 			tmp += postfix[j];
 			j++;
 		}
-		if (tb->PolinomExist(tmp2)) {
-			st.Push(*(tb->FindPolinom(tmp2).polinom));
+		if (tb->Exist(tmp2)) {
+			st.Push((tb->Find(tmp2).polinom));
 			i = j;
 			c = tmp2;
 		}

@@ -7,104 +7,87 @@
 using namespace std;
 
 TEST(Tree, Created_tree_is_empty) {
-	Tree<Polinom<string, int>> a(20);
+	Tree<int> a(20);
 	EXPECT_EQ(a.IsEmpty(), 1);
 }
 
 TEST(Tree, is_not_empty) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k; p.name = "name1";
-	a.Add(p);
+	a.Insert("name1", k);
 	EXPECT_EQ(a.IsEmpty(), 0);
 }
 
 TEST(Tree, right_size) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	p.name = "name2";
-	a.Add(p);
+	a.Insert("name1", k);
+	a.Insert("name2",k);
 	EXPECT_EQ(2, a.GetDataCount());
 
 }
 
 TEST(Tree, can_delete) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	p.name = "name2";
-	a.Add(p);
+	a.Insert("name1",k);
+	a.Insert("name2",k);
 	a.Delete("name2");
 	EXPECT_EQ(1, a.GetDataCount());
 }
 
 TEST(Tree, if_key_coincide_then_not_add) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	a.Add(p);
+	a.Insert("name1", k);
+	a.Insert("name1", k);
 	EXPECT_EQ(1, a.GetDataCount());
 }
 
 TEST(Tree, balance) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); p.name = "name4";
-	a.Add(p); p.name = "name5";
-	a.Add(p);
+	a.Insert("name1",k); 
+	a.Insert("name2", k);
+	a.Insert("name3", k);
+	a.Insert("name4", k);
+	a.Insert("name5", k);
 	int bl = a.GetBalance();
 	EXPECT_EQ(bl, 1);
 }
 
 TEST(Tree, reset_op) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); p.name = "name4";
-	a.Add(p); p.name = "name5";
-	a.Add(p); a.GoNext(); a.Reset();
+	a.Insert("name1", k);
+	a.Insert("name2", k);
+	a.Insert("name3", k);
+	a.Insert("name4", k);
+	a.Insert("name5", k);
+	 a.GoNext(); a.Reset();
 	EXPECT_EQ(a.GetKey(), "name1");
 }
 TEST(Tree, first_is_the_smallest) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name8";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); a.GoNext(); a.Reset();
+	a.Insert("name8",k);
+	a.Insert("name2", k); 
+	a.Insert("name3", k); a.GoNext(); a.Reset();
 	EXPECT_EQ(a.GetKey(), "name2");
 }
 
 TEST(Tree, is_sorted) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name8";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name1";
-	a.Add(p);
-	p.name = "name4";
-	a.Add(p); p.name = "name3";
-	a.Add(p);
+	a.Insert("name8",k); 
+	a.Insert("name2", k); 
+	a.Insert("name1", k);
+	a.Insert("name4", k); 
+	a.Insert("name3", k);
 	string tmp = "name0";
 	bool b = 1;
 	a.Reset();
+
 	for (int i = 0; ((i < 5) && (b == 1)); i++) {
 		b = (tmp < a.GetKey());
 		tmp = a.GetKey();
@@ -115,16 +98,13 @@ TEST(Tree, is_sorted) {
 /*
 */
 TEST(Tree, can_go) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name8";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name1";
-	a.Add(p);
-	p.name = "name4";
-	a.Add(p); p.name = "name3";
-	a.Add(p);
+	a.Insert("name8",k); 
+	a.Insert("name2", k); 
+	a.Insert("name1", k);
+	a.Insert("name4", k); 
+	a.Insert("name3", k);
 	bool b = 0;
 	a.Reset();
 	try {
@@ -137,142 +117,101 @@ TEST(Tree, can_go) {
 }
 
 TEST(Tree, can_find_val) {
-	Tree<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	Polinom<string, TPolinom> p2;
-	p2.name = "name4";
+	Tree<TPolinom> a(20);
 	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
 	TPolinom y; k.AddMonom(TMonom(8, 5, 7, 2));
-	p2.polinom = y;
-	p.polinom = k;
-	p.name = "name8";
-	a.Add(p);
-	p.name = "name2";
-	a.Add(p);
-	p.name = "name1";
-	a.Add(p);
-	a.Add(p2);
-	p.polinom = k;
-	p.name = "name3";
-	a.Add(p);
-	TPolinom s = a.Find(p2.name).polinom;
-	//bool r = (s == p2.polinom);
+	a.Insert("name8", k);
+	a.Insert("name2", k);
+	a.Insert("name1", k);
+	a.Insert("name4", y);
+	a.Insert("name3", k);
+	TPolinom s = a.Find("name4");
+	bool r = (s == y);
 	EXPECT_EQ(1, 1);
 }
 
 TEST(Tree, if_its_full) {
-	Tree<Polinom<string, TPolinom>> a(1);
-	Polinom<string, TPolinom> p;
+	Tree< TPolinom> a(1);
 	TPolinom k;
 	k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name8";
-	a.Add(p); p.name = "name2";
-	ASSERT_ANY_THROW(a.Add(p));
+	a.Insert("name8", k);
+	ASSERT_ANY_THROW(a.Insert("name2", k));
 }
 
 
 
 TEST(HashTblCh, Created_table_is_empty) {
-	HashTblCh<Polinom<string, int>> a(20);
+	HashTblCh<int> a(20);
 	EXPECT_EQ(a.IsEmpty(), 1);
 }
 
 TEST(HashTblCh, table_is_not_empty) {
-	HashTblCh<Polinom<string, int>> a(20);
-	Polinom<string, int> p;
-	p.polinom = 10; p.name = "name1";
-	a.Add(p);
+	HashTblCh<int> a(20);
+	a.Insert("name1",10);
 	EXPECT_EQ(a.IsEmpty(), 0);
 }
 
 TEST(HashTblCh, right_size) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	p.name = "name2";
-	a.Add(p);
+	HashTblCh<int> a(20);
+	a.Insert("name1", 1);
+	a.Insert("name2", 2);
 	EXPECT_EQ(2, a.GetDataCount());
 
 }
 
 TEST(HashTblCh, can_delete) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	p.name = "name2";
-	a.Add(p);
+	HashTblCh<int> a(20);
+	a.Insert("name1", 10);
+	a.Insert("name2", 2);
 	a.Delete("name2");
 	EXPECT_EQ(1, a.GetDataCount());
 }
 
 TEST(HashTblCh, if_key_coincide_then_not_add) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p);
-	a.Add(p);
+	HashTblCh<int> a(20);
+	a.Insert("name1", 1);
+	a.Insert("name1", 1);
 	EXPECT_EQ(1, a.GetDataCount());
 }
 
 TEST(HashTblCh, can_be_full) {
-	HashTblCh<Polinom<string, TPolinom>> a(2);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p); p.name = "name2";
-	a.Add(p);
+	HashTblCh<int> a(2);
+	a.Insert("name1", 1); 
+	a.Insert("name2", 2);
 	EXPECT_EQ(a.IsFull(), 1);
 }
 
 TEST(HashTblCh, reset_op) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); p.name = "name4";
-	a.Add(p); p.name = "name5";
-	a.Add(p); a.GoNext(); a.Reset();
+	HashTblCh<int> a(20);
+	a.Insert("name1", 17);
+	a.Insert("name2", 17);
+	a.Insert("name3", 11);
+	a.Insert("name4", 12);
+	a.Insert("name5", 1);
+	a.GoNext(); a.Reset();
 	EXPECT_EQ(a.GetKey(), "name1");
 }
 TEST(HashTblCh, can_find) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p, p2;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;
-	k.AddMonom(TMonom(3, 3, 3, 3));
-	p2.name = "name10";
-	p2.polinom = k;
-	a.Add(p2);
-	p.name = "name8";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); a.GoNext();
-	p = a.Find("name10");
-	bool b = (p.polinom == p2.polinom);
+	HashTblCh<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
+	bool b = a.Find("name4");
 	EXPECT_EQ(b, 1);
 }
 
 TEST(HashTblCh, can_go) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name8";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name1";
-	a.Add(p);
-	p.name = "name4";
-	a.Add(p); p.name = "name3";
-	a.Add(p);
-	bool b = 0;
+	HashTblCh<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
 	a.Reset();
 	string s1 = a.GetKey(), s2;
+	bool b = 0;
 	try {
 		for (int i = 0; (i < 5); i++) {
 			a.GoNext();
@@ -286,18 +225,14 @@ TEST(HashTblCh, can_go) {
 }
 
 TEST(HashTblCh, copy_has_own_memory) {
-	HashTblCh<Polinom<string, TPolinom>> a(20);
-	Polinom<string, TPolinom> p;
-	TPolinom k; k.AddMonom(TMonom(1, 2, 3, 4));
-	p.polinom = k;  p.name = "name1";
-	a.Add(p); p.name = "name2";
-	a.Add(p); p.name = "name3";
-	a.Add(p); p.name = "name4";
-	a.Add(p); p.name = "name5";
-	a.Add(p);
-	HashTblCh<Polinom<string, TPolinom>> t = a;
-	p.name = "name6";
-	a.Add(p);
+	HashTblCh<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
+	HashTblCh<int> t = a;
+	a.Insert("name6", 0);
 
 	bool b = (t == a);
 	EXPECT_EQ(b, 0);

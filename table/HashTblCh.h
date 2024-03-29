@@ -6,8 +6,7 @@ template <class T>
 struct HsNode
 {
 	HsNode<T>* Next = nullptr;
-	T val;
-	 
+	TRec<T> val;
 };
 
 template <class T>
@@ -33,7 +32,7 @@ public:
 		Current.u = nullptr;
 		First.u = nullptr;
 		Last.u = nullptr;
-		for (int i = 0; i < idcount; i++) {
+		for (int i = 0; i < (int)idcount; i++) {
 			id_tbl[i] = nullptr;
 		}
 		size = 0;
@@ -47,7 +46,7 @@ public:
 	std::string GetKey(void) const;
 	T GetValuePtr(void) const ;
 	//
-	bool Add(T obj) ;
+	bool Insert(string key, T obj) ;
 	bool Delete(std::string key) ;
 	T Find(std::string key) ;
 	bool Exist(std::string key);
@@ -71,7 +70,7 @@ int HashTblCh<T>::NewLast() {
 		HsNode<T>* tmp = id_tbl[nid];
 
 		while ((nid != -1) && (tmp == nullptr) && (tmp == Last.u)) nid--;
-		if (tmp == nullptr) { Last.u == nullptr; First.u == nullptr; Current.u == nullptr; size = 0; return 0; }
+		if (tmp == nullptr) { Last.u = nullptr; First.u = nullptr; Current.u = nullptr; size = 0; return 0; }
 		while ((tmp->Next != nullptr) && (tmp->Next != Last.u)) tmp = tmp->Next;
 		if (Current.u == Last.u) Reset();
 		Last.u = tmp;
@@ -87,7 +86,7 @@ int HashTblCh<T>::NewFirst() {
 		int nid = First.id;
 		HsNode<T>* tmp = First.u->Next;
 		while ((tmp != Last.u) && (tmp == nullptr)) tmp = id_tbl[++nid];
-		if (tmp == nullptr) { Last.u == nullptr; First.u == nullptr; Current.u == nullptr; size = 0; return 0; }
+		if (tmp == nullptr) { Last.u = nullptr; First.u = nullptr; Current.u = nullptr; size = 0; return 0; }
 		if (Current.u == First.u) { Current.id = First.id; Current.u = First.u; }
 		First.u = tmp;
 		First.id = nid;
@@ -135,29 +134,29 @@ int HashTblCh<T>::GoNext(void)
 template<class T>
 std::string HashTblCh<T>::GetKey(void) const
 {
-	return Current.u->val.name;
+	return Current.u->val.key;
 }
 
 template<class T>
 T HashTblCh<T>::GetValuePtr(void) const
 {
-	return Current.u->val;
+	return Current.u->val.value;
 }
 
 template<class T>
-bool HashTblCh<T>::Add(T obj)
+bool HashTblCh<T>::Insert(string key, T obj)
 {
-	int id = HashFunc(obj.name);
+	TRec<T> nr; nr.key = key; nr.value = obj;
+	int id = HashFunc(key);
 	HsNode<T>* nNode= new HsNode<T>;
-	nNode->val = obj;
+	nNode->val = nr;
 	nNode->Next = nullptr;
 	if (First.u == nullptr) { First.id = id; First.u = nNode; }
 	if (id_tbl[id] == nullptr) id_tbl[id] = nNode;
 	else {
 		HsNode<T>* tmp = id_tbl[id];
-
-		while ((tmp->Next != nullptr)&&(tmp->val.name!=obj.name)) tmp = tmp->Next;
-		if (tmp->val.name == obj.name) { tmp->val = obj; delete nNode; return 0; }
+		while ((tmp->Next != nullptr)&&(tmp->val.key!=key)) tmp = tmp->Next;
+		if (tmp->val.key == key) { tmp->val = nr; delete nNode; return 0; }
 		tmp->Next = nNode;
 	}
 	if ((id >= Last.id)||(Last.u==nullptr)) { Last.id = id; Last.u = nNode; }
@@ -174,9 +173,9 @@ bool HashTblCh<T>::Delete(std::string key)
 	else {
 		HsNode<T>* tmp = id_tbl[id];
 		HsNode<T>* tmp2 = nullptr;
-		while (!((tmp->Next == nullptr) || (tmp->Next->val.name == key))) { tmp = tmp->Next;}
+		while (!((tmp->Next == nullptr) || (tmp->Next->val.key == key))) { tmp = tmp->Next;}
 
-		if ((tmp->Next!= nullptr)||(tmp->Next->val.name==key)) { 
+		if ((tmp->Next!= nullptr)||(tmp->Next->val.key==key)) { 
 			if (Last.u == tmp->Next) NewLast();
 			if (First.u == tmp->Next) NewFirst();
 			if (tmp->Next != nullptr) tmp2 = tmp->Next->Next;
@@ -194,9 +193,9 @@ T HashTblCh<T>::Find(std::string key)
 {
 	int id = HashFunc(key);
 	HsNode<T>* tmp = id_tbl[id];
-	while (!((tmp->Next== nullptr)||(tmp->val.name==key))) tmp = tmp->Next;
-	if (tmp->val.name != key) throw "cant find";
-	return tmp->val;
+	while (!((tmp->Next== nullptr)||(tmp->val.key==key))) tmp = tmp->Next;
+	if (tmp->val.key != key) throw "cant find";
+	return tmp->val.value;
 }
 
 template<class T>
@@ -204,8 +203,8 @@ bool HashTblCh<T>::Exist(std::string key)
 {
 	int id = HashFunc(key);
 	HsNode<T>* tmp = id_tbl[id];
-	while (!((tmp->Next == nullptr) || (tmp->val.name != key))) tmp = tmp->Next;
-	if (tmp->val.name != key) return 0;
+	while (!((tmp->Next == nullptr) || (tmp->val.key != key))) tmp = tmp->Next;
+	if (tmp->val.key != key) return 0;
 	return 1;
 }
 

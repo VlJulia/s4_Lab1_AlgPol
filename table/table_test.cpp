@@ -4,7 +4,7 @@
 using namespace std;
 int main()
 {
-    HashTblCh<Polinom<string, int>> a(20);
+    HashTblCh<int> a(20);
     char aaaaaaaa;
     int l;
     cin >> aaaaaaaa;

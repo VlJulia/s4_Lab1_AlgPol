@@ -11,7 +11,7 @@ class TPolinom : public THeadList<TMonom>
 {
 public:
 	TPolinom();
-	TPolinom(TPolinom& other);
+	TPolinom(const TPolinom& other);
 	TPolinom(string str);
 	void AddMonom(TMonom monom); // добавление монома
 	string ToString(); // перевод в строку
@@ -27,6 +27,8 @@ public:
 
 
 	//              ОПЕРАТОРЫ:
+
+	TPolinom operator=(TPolinom other);
 	bool operator==(TPolinom& other); // сравнение полиномов на равенство
 	//TPolinom& operator=(TPolinom& other); // присваивание
 
@@ -60,9 +62,9 @@ TPolinom::TPolinom() :THeadList<TMonom>::THeadList()
 
 }
 
-TPolinom::TPolinom(TPolinom& other):THeadList<TMonom>::THeadList()
+TPolinom::TPolinom(const TPolinom& other):THeadList<TMonom>::THeadList()
 {
-	if (other.IsEmpty()) return;
+	if (other.length==0) return;
 	TMonom tmp;
 	TNode<TMonom>* st = other.pFirst;
 	for (int i = 0; i < other.length; i++) {
@@ -516,6 +518,12 @@ TPolinom TPolinom::operator- (TPolinom other) {
 	p.SubMonom(other.GetCurrentItem());
 	return p;
 }; //  вычитание полинома
+
+TPolinom TPolinom::operator=(TPolinom other)
+{
+	THeadList<TMonom>::operator=(other);
+	return *this;
+}
 
 bool TPolinom::operator==(TPolinom& other)
 {

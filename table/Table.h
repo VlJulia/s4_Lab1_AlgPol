@@ -1,20 +1,25 @@
 #pragma once
 #include <iostream>
+using namespace std;
 
-template <class Tn, class Tp>
-struct  Polinom//trec
+template <class T>
+struct  TRec//trec
 {
-	Tn name;
-	Tp polinom;
+	T value; //polinom
+	string key; //name
 
-
-	bool operator==(Polinom<Tn, Tp> other) { return ((name==other.name)&&(polinom==other.polinom)); }
-	friend std::ostream& operator<<(std::ostream& os, Polinom& p)
-	{
-		os << " Key: " << p.name << " val: " << p.polinom;
-		return os;
+	TRec& operator=(TRec &other) {
+		key = other.key;
+		value = other.value;
+		return *this;
 	}
 
+	bool operator==(TRec other) { return (key == other.key); }
+	friend std::ostream& operator<<(std::ostream& os, TRec& p)
+	{
+		os << " Key: " << p.key <<  " val: " << p.value;
+		return os;
+	}
 };
 
 template <class T>
@@ -33,7 +38,7 @@ public:
 	virtual std::string GetKey(void) const = 0;
 	virtual T GetValuePtr(void) const = 0;
 	//
-	virtual bool Add(T obj)=0;
+	virtual bool Insert(string key, T obj)=0;
 	virtual bool Delete(std::string key)=0;
 	virtual T Find(std::string key)=0;
 	virtual bool Exist(std::string key)=0;
@@ -45,9 +50,9 @@ public:
 		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
 		{
 			//std::cout << tab.GetValuePtr()<<endl;
-			os << tab.GetValuePtr() << endl;
+			os << tab.GetKey()<<" " << tab.GetValuePtr() << endl;
 		}
-		if (!(tab.IsEmpty())) os << tab.GetValuePtr() << endl;
+		if (!(tab.IsEmpty())) os << tab.GetKey() << " " << tab.GetValuePtr() << endl;
 		return os;
 	}
 };

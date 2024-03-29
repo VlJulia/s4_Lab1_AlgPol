@@ -110,13 +110,11 @@ template <class T>
 T TStack<T>::Get() {
     if (IsEmpty()) {
 		std::cout << __FUNCTION__;
-		throw ("is empty");
-		return 1;
+		throw ("is empty");;
     }
 	T a = this->mas[top-1];
-	this->mas[top-1] = 0;
+	//this->mas[top-1] = nullptr;
 	this->top = top - 1;
-	
     return a;
 }
 

@@ -9,18 +9,19 @@ public:
 	TrNode* LTrnode = NULL;
 	TrNode* UTrnode = NULL;
 
-	T val;
+	TRec<T> val;
+
 	int h = 0;
 	void newH() {
 		int a = 0;
 		if (RTrnode != NULL) a += RTrnode->h + 1;
-		if ((LTrnode != NULL)&&(LTrnode->h+1>a)) a = LTrnode->h + 1;
+		if ((LTrnode != NULL) && (LTrnode->h + 1 > a)) a = LTrnode->h + 1;
 		h = a;
 	}
 
-	int Add(T obj) {   //1 -новый уровень 0 -без нового уровня -1 -не добавился(уже есть)
+	int Add(TRec<T> obj) {   //1 -новый уровень 0 -без нового уровня -1 -не добавился(уже есть)
 		int a = 0;
-		if (this->val.name < obj.name) {
+		if (this->val.key < obj.key) {
 			if (this->RTrnode != NULL) {
 				a = this->RTrnode->Add(obj);
 				if (a == 1) newH();
@@ -28,7 +29,7 @@ public:
 			}
 			else
 			{
-				this->RTrnode = new TrNode<T>;
+				this->RTrnode = new TrNode;
 				this->RTrnode->UTrnode = this;
 				this->RTrnode->h = 0;
 				this->RTrnode->val = obj;
@@ -40,7 +41,7 @@ public:
 				return 0;
 			}
 		}
-		if (this->val.name > obj.name) {
+		if (this->val.key > obj.key) {
 			if (this->LTrnode != NULL) {
 				a = this->LTrnode->Add(obj);
 				if (a == 1) newH();
@@ -60,7 +61,7 @@ public:
 				return 0;
 			}
 		}
-		if (this->val.name == obj.name) {
+		if (this->val.key == obj.key) {
 			this->val = obj;
 			return -1;
 		}
@@ -82,14 +83,14 @@ public:
 		if (tmpC->LTrnode != NULL) {
 			tmpC->LTrnode->UTrnode = this;
 		}
-			RTrnode = tmpC->LTrnode;
+		RTrnode = tmpC->LTrnode;
 
 		tmpC->LTrnode = this;
 		UTrnode = tmpC;
 		newH();
-	/*	std::cout << " L ROT " << val << "   u" << UTrnode->val << endl;
-		std::cout << " L ROT " << (LTrnode == NULL) << "  - " << (RTrnode==NULL) << endl;*/
-		//std::cout << " L ROT " << UTrnode->LTrnode->val << "   " << UTrnode->RTrnode->val << endl;
+		/*	std::cout << " L ROT " << val << "   u" << UTrnode->val << endl;
+			std::cout << " L ROT " << (LTrnode == NULL) << "  - " << (RTrnode==NULL) << endl;*/
+			//std::cout << " L ROT " << UTrnode->LTrnode->val << "   " << UTrnode->RTrnode->val << endl;
 	};
 	void RightRot() {
 		TrNode* tmpB = LTrnode;
@@ -107,15 +108,15 @@ public:
 		if (tmpB->RTrnode != NULL) {
 			tmpB->RTrnode->UTrnode = this;
 		}
-			LTrnode = tmpB->RTrnode;
+		LTrnode = tmpB->RTrnode;
 		tmpB->RTrnode = this;
 		UTrnode = tmpB;
 		newH();
 	};
 	int dh() {
 		int t = 0;
-		if ((RTrnode != NULL)) t += (RTrnode->h+1);
-		if ((LTrnode != NULL)) t -= (LTrnode->h+1);
+		if ((RTrnode != NULL)) t += (RTrnode->h + 1);
+		if ((LTrnode != NULL)) t -= (LTrnode->h + 1);
 		return t;
 	}
 };
@@ -123,6 +124,8 @@ public:
 template<class T>
 class Tree:public Table<T>
 {
+
+
 // public:
 	TrNode<T>* radix = NULL;
 	TrNode<T>* CrBr = NULL;
@@ -147,7 +150,7 @@ public:
 	std::string GetKey(void) const ;
 	 T GetValuePtr(void) const ;
 	//
-	 bool Add(T obj) ;
+	 bool Insert(string key, T obj) ;
 	 bool Delete(std::string key) ;
 	 T Find(std::string key);
 	 bool Exist(std::string key) ;
@@ -260,11 +263,6 @@ int Tree<T>::GoNext(void)
 		return 1;
 	}
 
-	/*std::cout << Current->val.name<< " h=" << Current->h << " ";
-	if (Current->UTrnode != NULL) std::cout << "UTrnode =  " << Current->UTrnode->val << " ";
-	if ( Current->LTrnode!=NULL) std::cout  << "LTrnode =  " << Current->LTrnode->val << " ";
-	if (Current->RTrnode != NULL) std::cout << "RTrnode =  " << Current->RTrnode->val << " ";
-	std::cout << endl;*/
 	if (Current == radix) {
 		Current = Current->RTrnode;
 		CrBr = Current;
@@ -302,25 +300,29 @@ int Tree<T>::GoNext(void)
 
 template<class T>
 std::string Tree<T>::GetKey(void) const {
-	if (!IsEmpty()) return Current->val.name;
+	if (!IsEmpty()) return Current->val.key;
 	throw "is empty";
 };
 
 template<class T>
 T Tree<T>::GetValuePtr(void) const {
-	if (!IsEmpty()) return Current->val;
+	if (!IsEmpty()) return Current->val.value;
 	throw "is empty";
 };
 
 template<class T>
-bool Tree<T>::Add(T obj) {
+bool Tree<T>::Insert(string key, T obj) {
+	TRec<T> nr;
+	nr.key = key;
+	nr.value = obj;
+
 	if (IsFull()) { 
 		throw "is full";
 		return false; }
 	if (radix == NULL) {
 		radix = new TrNode<T>;
 		radix->h = 0;
-		radix->val = obj;
+		radix->val = nr;
 		First = radix;
 		Last = radix;
 		Current = radix;
@@ -328,12 +330,12 @@ bool Tree<T>::Add(T obj) {
 		size++;
 		return true;
 	}
-	int a= radix->Add(obj);
+	int a= radix->Add(nr);
 	if (a == -1) return 0;
-	if (obj.name > Last->val.name) {
+	if (nr.key > Last->val.key) {
 		Last = Last->RTrnode;
 	};
-	if (obj.name < First->val.name) First = First->LTrnode;
+	if (nr.key < First->val.key) First = First->LTrnode;
 	size++;
 	Balance();
 	return 1;
@@ -360,7 +362,7 @@ int Tree<T>::FPCLCheck(TrNode<T>* tmp) {
 
 template<class T>
 int Tree<T>::DeleteRec(std::string key, TrNode<T>* t) {//1 -минус уровень 0 -уровни не поменялись -1 -не нашлось
-	if (key == t->val.name) {
+	if (key == t->val.key) {
 		FPCLCheck(t);
 		if ((t->LTrnode == NULL) && (t->RTrnode==NULL)) {
 			int a = 0;
@@ -375,8 +377,8 @@ int Tree<T>::DeleteRec(std::string key, TrNode<T>* t) {//1 -минус уровень 0 -уро
 		if (t->LTrnode == NULL) {
 			int y= FPCLCheck(t);
 			TrNode<T>* k = t->UTrnode;
-			if ((k!=NULL)&&(k->val.name == radix->val.name)) k = radix;
-			if ((k != NULL) && (k->val.name < t->val.name)) {
+			if ((k!=NULL)&&(k->val.key == radix->val.key)) k = radix;
+			if ((k != NULL) && (k->val.key < t->val.key)) {
 				k->RTrnode = t->RTrnode; 
 			}
 			else  
@@ -400,15 +402,15 @@ int Tree<T>::DeleteRec(std::string key, TrNode<T>* t) {//1 -минус уровень 0 -уро
 		TrNode<T>* tmp2 = t->LTrnode;
 		while (tmp2->RTrnode != NULL) tmp2 = tmp2->RTrnode;
 		FPCLCheck(tmp2);
-		T  y = tmp2->val;
-		int a=  Delete(tmp2->val.name);
+		TRec<T>  y = tmp2->val;
+		int a=  Delete(tmp2->val.key);
 		t->val = y;
 		return a;
 	}
 	if ((t->LTrnode == NULL) && (t->RTrnode == NULL)) return -1;
 	// right way
 	int a = 0;
-	if (key > t->val.name) {
+	if (key > t->val.key) {
 		if (t->RTrnode == NULL) {
 			return -1;
 		}
@@ -417,7 +419,7 @@ int Tree<T>::DeleteRec(std::string key, TrNode<T>* t) {//1 -минус уровень 0 -уро
 		return a;
 	}
 	//left way
-	if (key < t->val.name) {
+	if (key < t->val.key) {
 		if (t->LTrnode == NULL) {
 			return -1;
 		}
@@ -431,7 +433,7 @@ template<class T>
 bool Tree<T>::Delete(std::string key) {
 	if ((radix == NULL)||(size==0))	return false;
 	if (size == 1) { delete radix; radix == NULL;  size--; return 1; }
-	if (radix->val.name == key) {
+	if (radix->val.key == key) {
 		NewRadix();
 	}
 	int a = DeleteRec(key, radix) != -1;
@@ -447,17 +449,17 @@ T Tree<T>::Find(std::string key) {
 		while (true) {
 			// right way
 			if (tmp == NULL) throw "cant find";
-			if (key > tmp->val.name) {
+			if (key > tmp->val.key) {
 				tmp = tmp->RTrnode;
 				continue;
 			}
 			//left way
-			if (key < tmp->val.name) {
+			if (key < tmp->val.key) {
 				tmp = tmp->LTrnode;
 				continue;
 			}
-			if (key == tmp->val.name) {
-				return tmp->val;
+			if (key == tmp->val.key) {
+				return tmp->val.value;
 			}
 		}
 	}
@@ -471,16 +473,16 @@ bool Tree<T>::Exist(std::string key) {
 		while (true) {
 			// right way
 			if (tmp == NULL) return false;
-			if (key > tmp->val.name) {
+			if (key > tmp->val.key) {
 				tmp = radix->RTrnode;
 				continue;
 			}
 			//left way
-			if (key < tmp->val.name) {
+			if (key < tmp->val.key) {
 				tmp = radix->LTrnode;
 				continue;
 			}
-			if (key == tmp->val.name) {
+			if (key == tmp->val.key) {
 				return true;
 			}
 		}
