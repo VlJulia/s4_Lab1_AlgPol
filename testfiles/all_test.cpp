@@ -6,6 +6,7 @@
 using namespace std;
 int main()
 {
+    cout << "hello!";
     /*
    TPolinom p("3X3Y3Z3 - 2X2Y2Z2 + 1XYZ");
    
