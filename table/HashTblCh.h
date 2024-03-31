@@ -37,20 +37,21 @@ public:
 		}
 		size = 0;
 	}
+	HashTblCh(HashTblCh<T>& other);
 	//~HashTblCh();
 	bool IsFull() const;                       // заполнена?
 	//навигация 
 	int Reset(void); // установить на первую запись
-	int IsTabEnded(void) const ; // таблица завершена?
+	int IsTabEnded(void) const; // таблица завершена?
 	int GoNext(void); // переход к следующей записи
 	std::string GetKey(void) const;
-	T GetValuePtr(void) const ;
+	T GetValuePtr(void) const;
 	//
-	bool Insert(string key, T obj) ;
-	bool Delete(std::string key) ;
-	T Find(std::string key) ;
+	bool Insert(string key, T obj);
+	bool Delete(std::string key);
+	T Find(std::string key);
 	bool Exist(std::string key);
-	HashTblCh<T>& operator=( HashTblCh<T>& other);
+	HashTblCh<T>& operator=(HashTblCh<T>& other);
 	bool operator==(HashTblCh<T>& other);
 
 
@@ -95,6 +96,40 @@ int HashTblCh<T>::NewFirst() {
 	return 0;
 }
 template<class T>
+HashTblCh<T>::HashTblCh(HashTblCh<T>& other)
+{
+	if (&other == nullptr) { return; }
+	idcount = other.idcount; size = 0;
+	max_data_count = other.max_data_count;
+	id_tbl = new HsNode<T>*[idcount];
+	Current = other.Current;
+	First = other.First;
+	Last = other.Last;
+
+	for (int i = 0; i < (int)idcount; i++) {
+		id_tbl[i] = nullptr;
+	}
+	for (int i = 0; i < idcount; i++)
+		if (other.id_tbl[i] != nullptr) {
+			HsNode<T>* t = other.id_tbl[i];
+			HsNode<T>* t1 = nullptr;
+			HsNode<T>* t2 = id_tbl[i];
+			while (t != nullptr) {
+				t2 = new HsNode<T>;
+				t2->val = t->val; t2->Next = nullptr;
+				if (t1 != nullptr) t1->Next = t2;
+				if (t == other.Current.u) Current.u = t2;
+				if (t == other.First.u) First.u = t2;
+				if (t == other.Last.u) Last.u = t2;
+				t1 = t2;
+				t2 = t2->Next;
+				t = t->Next;
+			}
+		}
+		else id_tbl[i] = nullptr;
+	size = other.size;
+}
+template<class T>
 bool HashTblCh<T>::IsFull() const
 {
 	for (int i = 0; i < idcount; i++) if (id_tbl[i] == nullptr) return false;
@@ -113,7 +148,7 @@ int HashTblCh<T>::Reset(void)
 template<class T>
 int HashTblCh<T>::IsTabEnded(void) const
 {
-	return (Current.u==Last.u);
+	return (Current.u == Last.u);
 }
 
 template<class T>
@@ -148,18 +183,18 @@ bool HashTblCh<T>::Insert(string key, T obj)
 {
 	TRec<T> nr; nr.key = key; nr.value = obj;
 	int id = HashFunc(key);
-	HsNode<T>* nNode= new HsNode<T>;
+	HsNode<T>* nNode = new HsNode<T>;
 	nNode->val = nr;
 	nNode->Next = nullptr;
 	if (First.u == nullptr) { First.id = id; First.u = nNode; }
 	if (id_tbl[id] == nullptr) id_tbl[id] = nNode;
 	else {
 		HsNode<T>* tmp = id_tbl[id];
-		while ((tmp->Next != nullptr)&&(tmp->val.key!=key)) tmp = tmp->Next;
+		while ((tmp->Next != nullptr) && (tmp->val.key != key)) tmp = tmp->Next;
 		if (tmp->val.key == key) { tmp->val = nr; delete nNode; return 0; }
 		tmp->Next = nNode;
 	}
-	if ((id >= Last.id)||(Last.u==nullptr)) { Last.id = id; Last.u = nNode; }
+	if ((id >= Last.id) || (Last.u == nullptr)) { Last.id = id; Last.u = nNode; }
 	if (id < First.id) { First.id = id; First.u = nNode; }
 	size++;
 	return 1;
@@ -173,9 +208,9 @@ bool HashTblCh<T>::Delete(std::string key)
 	else {
 		HsNode<T>* tmp = id_tbl[id];
 		HsNode<T>* tmp2 = nullptr;
-		while (!((tmp->Next == nullptr) || (tmp->Next->val.key == key))) { tmp = tmp->Next;}
+		while (!((tmp->Next == nullptr) || (tmp->Next->val.key == key))) { tmp = tmp->Next; }
 
-		if ((tmp->Next!= nullptr)||(tmp->Next->val.key==key)) { 
+		if ((tmp->Next != nullptr) || (tmp->Next->val.key == key)) {
 			if (Last.u == tmp->Next) NewLast();
 			if (First.u == tmp->Next) NewFirst();
 			if (tmp->Next != nullptr) tmp2 = tmp->Next->Next;
@@ -193,7 +228,7 @@ T HashTblCh<T>::Find(std::string key)
 {
 	int id = HashFunc(key);
 	HsNode<T>* tmp = id_tbl[id];
-	while (!((tmp->Next== nullptr)||(tmp->val.key==key))) tmp = tmp->Next;
+	while (!((tmp->Next == nullptr) || (tmp->val.key == key))) tmp = tmp->Next;
 	if (tmp->val.key != key) throw "cant find";
 	return tmp->val.value;
 }
@@ -209,19 +244,18 @@ bool HashTblCh<T>::Exist(std::string key)
 }
 
 template<class T>
-HashTblCh<T>& HashTblCh<T>::operator=( HashTblCh<T>& other) {
-	std::cout << "\n\n\n   BIGIN   " << endl;
-	if (this == &other) {	return *this;}
+HashTblCh<T>& HashTblCh<T>::operator=(HashTblCh<T>& other) {
+	if (this == &other) { return *this; }
 	if (*this == other) { return *this; }
 	if (this == nullptr) { return *this; }
 
-	if (other.id_tbl != nullptr) {
+	if (id_tbl != nullptr) {
 
-		for (int i=0;i<other.idcount;i++)
-			if (other.id_tbl[i] != nullptr) {
-				HsNode<T>* tmp = other.id_tbl[i];
+		for (int i = 0; i < idcount; i++)
+			if (id_tbl[i] != nullptr) {
+				HsNode<T>* tmp = id_tbl[i];
 				tmp->Next = nullptr;
-				HsNode<T>* tmp2 = other.id_tbl[i];
+				HsNode<T>* tmp2 = id_tbl[i];
 				while (tmp != nullptr) {
 					tmp2 = tmp->Next;
 					delete tmp;
@@ -229,25 +263,21 @@ HashTblCh<T>& HashTblCh<T>::operator=( HashTblCh<T>& other) {
 				}
 
 			}
-	
+
 	}
-	delete other.id_tbl;
-	other.id_tbl = new HsNode<T>*[idcount];
-
-	other.idcount = idcount; other.size = 0;
+	delete id_tbl;
+	idcount = other.idcount;
+	id_tbl = new HsNode<T>*[idcount];
+	size = 0;
 	for (int i = 0; i < idcount; i++)
-		if (id_tbl[i] != nullptr) {
-			HsNode<T>* t = id_tbl[i];
-
-			while (t!= nullptr) { 
-				other.Add(t->val);
+		if (other.id_tbl[i] != nullptr) {
+			HsNode<T>* t = other.id_tbl[i];
+			while (t != nullptr) {
+				Insert(t->val.key, t->val.value);
 				t = t->Next;
 			}
 		}
-		else other.id_tbl[i] = nullptr;
-
-	std::cout << "other  " << other << endl;
-	std::cout << "this  " << *this << endl;
+		else id_tbl[i] = nullptr;
 	return *this;
 };
 
@@ -263,7 +293,7 @@ bool HashTblCh<T>::operator==(HashTblCh<T>& other) {
 			HsNode<T>* t = id_tbl[i];
 			HsNode<T>* t2 = other.id_tbl[i];
 
-			while (t!= nullptr) {
+			while (t != nullptr) {
 				if (!(t->val == t2->val)) return false;
 				t = t->Next; t2 = t2->Next;
 			}
@@ -271,27 +301,3 @@ bool HashTblCh<T>::operator==(HashTblCh<T>& other) {
 		else if (other.id_tbl[i] != nullptr) return false;
 	return true;
 };
-//
-//template<class T>
-//HashTblCh<T>::~HashTblCh()
-//{
-//	Reset();
-//	int b = First.id, e = Last.id;
-//	if ((id_tbl != nullptr)&&(size!=0)) {
-//		for (int i = b; (i <= e) && (size != 0); i++)
-//			if (id_tbl[i] != nullptr) {
-//				HsNode<T>* tmp = id_tbl[i];
-//				HsNode<T>* tmp2 = id_tbl[i];
-//
-//					while ((tmp != nullptr) && (size != 0)) {
-//						tmp2 = tmp;
-//						tmp = tmp->Next;
-//						delete tmp2;
-//						size--;
-//					}
-//
-//			}
-//		delete id_tbl;
-//	}
-//
-//}

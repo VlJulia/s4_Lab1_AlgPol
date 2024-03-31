@@ -5,6 +5,7 @@
 #include "ListTable.h"
 #include "orderedArrayTable.h"
 #include "unorderedArrayTable.h"
+#include "HashTblDH.h"
 #include "TPolinom.h"
 
 using namespace std;
@@ -570,3 +571,108 @@ TEST(orderedArrayTable, if_its_full) {
 	ASSERT_ANY_THROW(a.Insert("name2", k));
 }
 
+
+TEST(HashTblDH, Created_table_is_empty) {
+	HashTblDH<int> a(20);
+	EXPECT_EQ(a.IsEmpty(), 1);
+}
+
+TEST(HashTblDH, table_is_not_empty) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 10);
+	EXPECT_EQ(a.IsEmpty(), 0);
+}
+
+TEST(HashTblDH, right_size) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 1);
+	a.Insert("name2", 2);
+	EXPECT_EQ(2, a.GetDataCount());
+
+}
+
+TEST(HashTblDH, can_delete) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 10);
+	a.Insert("name2", 2);
+	a.Delete("name2");
+	EXPECT_EQ(1, a.GetDataCount());
+}
+
+TEST(HashTblDH, if_key_coincide_then_not_add) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 1);
+	a.Insert("name1", 1);
+	EXPECT_EQ(1, a.GetDataCount());
+}
+
+TEST(HashTblDH, can_be_full) {
+	HashTblDH<int> a(2);
+	a.Insert("name1", 1);
+	a.Insert("name2", 2);
+	EXPECT_EQ(a.IsFull(), 1);
+}
+
+TEST(HashTblDH, reset_op) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 17);
+	a.Insert("name2", 17);
+	a.Insert("name3", 11);
+	a.Insert("name4", 12);
+	a.Insert("name5", 1);
+	a.Reset();
+	string f = a.GetKey();
+	while (!a.IsTabEnded()) a.GoNext();
+
+	a.GoNext(); a.GoNext(); a.Reset();
+
+	string s = a.GetKey();
+
+	EXPECT_EQ(f, s);
+}
+TEST(HashTblDH, can_find) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
+	bool b = a.Find("name4");
+	EXPECT_EQ(b, 1);
+}
+
+TEST(HashTblDH, can_go) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
+	a.Reset();
+	string s1 = a.GetKey(), s2;
+	bool b = 0;
+	try {
+		for (int i = 0; (i < 5); i++) {
+			a.GoNext();
+			s2 = a.GetKey();
+			if (s1 == s2) { b = 1; break; }
+			s1 = s2;
+		}
+	}
+	catch (...) { b = 1; }
+	EXPECT_EQ(0, b);
+}
+
+TEST(HashTblDH, copy_has_own_memory) {
+	HashTblDH<int> a(20);
+	a.Insert("name1", 0);
+	a.Insert("name2", 0);
+	a.Insert("name3", 0);
+	a.Insert("name4", 1);
+	a.Insert("name5", 0);
+	HashTblDH<int> t = a;
+	a.Insert("name6", 0);
+
+	bool b = (t == a);
+	EXPECT_EQ(b, 0);
+}
