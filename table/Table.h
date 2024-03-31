@@ -62,7 +62,7 @@ int Table<T>::GetDataCount() const {
 };
 template <class T>
 bool Table<T>::IsEmpty() const {
-	return size == 0;
+	return (size == 0);
 }
 template<class T>
 bool Table<T>::IsFull() const
