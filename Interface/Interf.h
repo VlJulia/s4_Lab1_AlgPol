@@ -18,6 +18,7 @@ class Interf {
 	Table<T>* current;
 	int cur = 0;
 	int size;
+	int m_key_size = 0;
 
 	public:
 	Interf(int s=0) {
@@ -30,7 +31,11 @@ class Interf {
 		tbl_array[5] = new orderedArrayTable<T>(s);
 		current = tbl_array[cur];
 	}
-	int NextTabl() { cur = (cur + 1) % n; current = tbl_array[cur]; return 1; }
+	int NextTabl() { 
+		cur = (cur + 1) % n; 
+		current = tbl_array[cur]; 
+		return 1; 
+	}
 	int GetDataCount()   const; // количество записей
 	bool IsEmpty() const;  // пуста?
 	bool IsFull() const;                       // заполнена?
@@ -50,16 +55,88 @@ class Interf {
 	T Division(string key1, string key2);
 	T derivative(string key, char md);
 	T integral(string key, char md);
-	T Mult(string key1, string key2, char md);
-	T Div(string key1, string key2, char md);
-	T Sum(string key1, string key2, char md);
-	T Dif(string key1, string key2, char md);
+	T Mult(string key1, string key2);
+	T Div(string key1, string key2);
+	T Sum(string key1, string key2);
+	T Dif(string key1, string key2);
+	
+	void SetTree() {
+		cur = 0;
+		current = tbl_array[cur];
+	}
+	void SetHashTblCh() {
+		cur = 1;
+		current = tbl_array[cur];
+	}
+	void SetHashTblDH() {
+		cur = 2;
+		current = tbl_array[cur];
+	}
+	void SetListTable() {
+		cur = 3;
+		current = tbl_array[cur];
+	}
+	void SetunorderedArrayTable() {
+		cur = 4;
+		current = tbl_array[cur];
+	}
+	void SetorderedArrayTable() {
+		cur = 5;
+		current = tbl_array[cur];
+	}
+	
 	void calculate(string key1, double X = 0, double Y = 0, double Z = 0);
 	friend std::ostream& operator<<(std::ostream& os, Interf& tab)
 	{
-		std::cout << *tab.current;
+		switch (tab.cur) {
+		case 0:
+			std::cout << "Tree ";
+			break;
+		case 1:
+			std::cout << "Hash CH ";
+			break;
+		case 2:
+			std::cout << "Hash DH ";
+			break;
+		case 3:
+			std::cout << "List ";
+			break;
+		case 4:
+			std::cout << "Array unordered ";
+			break;
+		case 5:
+			std::cout << "Array ordered ";
+			break;
+		default:
+			break;
+		}
+		os << endl;
+		string s1 = "key", s2 = "value";
+		os << s1;
+		for (int i = s1.length(); i < tab.m_key_size; i++) os << " ";
+		os << "|" << s2 << endl;
+		for (int i = 0; i < tab.m_key_size; i++) os << "-";
+		os << "+----------------------------------------" << endl;
+		if (tab.current->IsEmpty()) {
+			return os;
+		}
+		for (tab.current->Reset(); !tab.current->IsTabEnded(); tab.current->GoNext())
+		{
+			string key = tab.current->GetKey();
+			os << key;
+			for (int i = key.length(); i < tab.m_key_size; i++) os << " ";
+			os << "|" << tab.current->GetValuePtr() << endl;
+		}
+		if (!(tab.current->IsEmpty())) {
+			string key = tab.current->GetKey();
+			os << key;
+			for (int i = key.length(); i < tab.m_key_size; i++) os << " ";
+			os << "|" << tab.current->GetValuePtr() << endl;
+		}
 		return os;
 	}
+
+
 private:
 	void AddDialog(T obj) { 
 		std::cout << " please print key for new obj..\n";
@@ -120,7 +197,11 @@ template<class T>
 bool Interf<T>::Insert(string key, T obj)
 {
 	bool b = false;
-	for (int i = 0; i < n; i++) b=tbl_array[i]->Insert(key, obj);
+	if (key.length() > m_key_size) {
+		m_key_size = key.length();
+	}
+	for (int i = 0; i < n; i++) 
+		b=tbl_array[i]->Insert(key, obj);
 	return b;
 }
 
@@ -128,7 +209,7 @@ template<class T>
 bool Interf<T>::Delete(std::string key)
 {
 	bool b = false;
-	for (int i = 0; i < n; i++) b = tbl_array[i]->Delete(key, obj);
+	for (int i = 0; i < n; i++) b = tbl_array[i]->Delete(key);
 	return b;
 }
 
@@ -147,13 +228,14 @@ bool Interf<T>::Exist(std::string key)
 template<class T>
 T Interf<T>::Division(string key1, string key2) //с остатком
 {
+	T p1, p2;
 	try {
-		T p1 = current->Find(key1);
-		T p2 = current->Find(key2);
+		p1 = current->Find(key1);
+		p2 = current->Find(key2);
 	}
 	catch (...) { std::cout << "cant find "<<endl; }
 	T ost;
-	T res = Division(p1, p2, ost);
+	T res = p1.Division(p2, ost);
 	std::cout << "res is " << res << " ost is" << ost<<endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv=0;
 	std::cin >> otv;
@@ -167,8 +249,9 @@ T Interf<T>::Division(string key1, string key2) //с остатком
 template<class T>
 inline T Interf<T>::derivative(string key, char md)
 {
+	T p1;
 	try {
-		T p1 = current->Find(key1);
+		p1 = current->Find(key);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1.derivative(md);
@@ -182,8 +265,9 @@ inline T Interf<T>::derivative(string key, char md)
 template<class T>
 inline T Interf<T>::integral(string key, char md)
 {
+	T p1;
 	try {
-		T p1 = current->Find(key1);
+		p1 = current->Find(key);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1.integral(md);
@@ -195,11 +279,13 @@ inline T Interf<T>::integral(string key, char md)
 }
 
 template<class T>
-inline T Interf<T>::Mult(string key1, string key2, char md)
+inline T Interf<T>::Mult(string key1, string key2)
 {
+	T p1;
+	T p2;
 	try {
-		T p1 = current->Find(key1);
-		T p2 = current->Find(key2);
+		p1 = current->Find(key1);
+		p2 = current->Find(key2);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1*p2;
@@ -211,13 +297,17 @@ inline T Interf<T>::Mult(string key1, string key2, char md)
 }
 
 template<class T>
-inline T Interf<T>::Div(string key1, string key2, char md)
+inline T Interf<T>::Div(string key1, string key2) //без остатка
 {
+	T p1;
+	T p2;
 	try {
-		T p1 = current->Find(key1);
-		T p2 = current->Find(key2);
+		p1 = current->Find(key1);
+		p2 = current->Find(key2);
+		std::cout << p1 << "    " << p2 << endl;
 	}
 	catch (...) { std::cout << "cant find " << endl; }
+	std::cout << p1/p2 << endl;
 	T res = p1 / p2;
 	std::cout << "res is " << res << endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -227,11 +317,13 @@ inline T Interf<T>::Div(string key1, string key2, char md)
 }
 
 template<class T>
-inline T Interf<T>::Sum(string key1, string key2, char md)
+inline T Interf<T>::Sum(string key1, string key2)
 {
+	T p1;
+	T p2;
 	try {
-		T p1 = current->Find(key1);
-		T p2 = current->Find(key2);
+		p1 = current->Find(key1);
+		p2 = current->Find(key2);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1 + p2;
@@ -243,11 +335,13 @@ inline T Interf<T>::Sum(string key1, string key2, char md)
 }
 
 template<class T>
-inline T Interf<T>::Dif(string key1, string key2, char md)
+inline T Interf<T>::Dif(string key1, string key2)
 {
+	T p1;
+	T p2;
 	try {
-		T p1 = current->Find(key1);
-		T p2 = current->Find(key2);
+		p1 = current->Find(key1);
+		p2 = current->Find(key2);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1 - p2;
@@ -261,8 +355,9 @@ inline T Interf<T>::Dif(string key1, string key2, char md)
 template<class T>
 inline void Interf<T>::calculate(string key1, double X, double Y, double Z)
 {
+	T p1;
 	try {
-		T p1 = current->Find(key1);
+		p1 = current->Find(key1);
 	}
 	catch (...) { std::cout << "cant find " << endl; }
 	double res = p1.calculate(X, Y, Z);

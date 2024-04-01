@@ -47,6 +47,9 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, Table& tab)
 	{
 		std::cout << "Table printing" << endl;
+		if (tab.IsEmpty()) {
+			return os;
+		}
 		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
 		{
 			//std::cout << tab.GetValuePtr()<<endl;

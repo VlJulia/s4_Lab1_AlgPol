@@ -45,22 +45,26 @@ public:
 
 	friend ostream& operator<<(ostream& os, const TList<T>& obj) {
 		//os << &obj;
-		if (obj.length == 0) { os << "length = 0 \n[\n]" << endl; return os; }
-		os << "length = " << obj.length << endl;
-		try { os << "first = " << obj.pFirst->value << endl; } catch (...) { os << "no first" << endl; }
-		try { os << "last = " << obj.pLast->value << endl; } catch (...) { os << "no last" << endl; }
+		if (obj.length == 0) { 
+			//os << "length = 0 \n[\n]" << endl;
+			return os; }
+		//os << "length = " << obj.length << endl;
+		//try { os << "first = " << obj.pFirst->value << endl; } catch (...) { os << "no first" << endl; }
+		//try { os << "last = " << obj.pLast->value << endl; } catch (...) { os << "no last" << endl; }
 		TNode<T>* tmp = obj.pFirst;
-		os << "[" << endl;
+		//os << "[" << endl;
+		
 		for(int i=0;i<obj.length;i++)
 		{
 
 			os << tmp->value;// << " next" << tmp->pNext;
-			if (tmp == obj.pCurrent) os << "<-- current";
-			if (tmp == obj.pPrevious) os << "<-- pr";
-			os << endl;
+			//if (tmp == obj.pCurrent) os << "<-- current";
+			//if (tmp == obj.pPrevious) os << "<-- pr";
+			os << ", ";
 			tmp = tmp->pNext;
 		}
-		os << "]" << endl;
+		
+		//os << "]" << endl;
 		return os;
 	}
 
