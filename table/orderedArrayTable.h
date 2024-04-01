@@ -6,6 +6,15 @@ class orderedArrayTable :public unorderedArrayTable<T>
 public:
 	bool Insert(string key, T obj);
 	unorderedArrayTable::unorderedArrayTable;
+	orderedArrayTable<T> operator=(orderedArrayTable other);
+};
+template<class T>
+orderedArrayTable<T> orderedArrayTable<T>::operator=(orderedArrayTable other) {
+	this->max_data_count = other.max_data_count;
+	this->data = new TRec<T>[max_data_count];
+	this->size = other.size;
+	this->currentLine = other.currentLine;
+	for (int i = 0; i < max_data_size; i++) this->data[i] = other.data;
 };
 template<class T>
 bool orderedArrayTable<T>::Insert(string key, T obj) {

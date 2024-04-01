@@ -26,6 +26,20 @@ public:
 	bool Delete(std::string key);
 	T Find(std::string key);
 	bool Exist(std::string key);
+	bool operator==(unorderedArrayTable other);
+	unorderedArrayTable<T> operator=(unorderedArrayTable other);
+	friend std::ostream& operator<<(std::ostream& os, unorderedArrayTable& tab)
+	{
+		std::cout << "Table printing" << endl;
+		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
+		{
+			//std::cout << tab.GetValuePtr()<<endl;
+			os << tab.GetKey() << " " << tab.GetValuePtr() << endl;
+		}
+		if (!(tab.IsEmpty())) os << tab.GetKey() << " " << tab.GetValuePtr() << endl;
+		tab.Reset();
+		return os;
+	}
 };
 template<class T>
 bool unorderedArrayTable<T>::pushpull(int index, int mode) {//PUSH: перемещает элементы массива на единицу вперёд, начиная с элемента [index] до NULL; PULL: смещает все элементы массива, начиная с [index+1], на единицу назад, на место элемента [index] 
@@ -79,7 +93,13 @@ int unorderedArrayTable<T>::Reset(void) { currentLine = 0; return 1; };
 template<class T>
 int unorderedArrayTable<T>::IsTabEnded(void) const { if (currentLine == max_data_count - 1)return 1; else return 0; };
 template<class T>
-int unorderedArrayTable<T>::GoNext(void) { if (currentLine == max_data_count - 1)return 0; else { currentLine++;  return 1; } };
+int unorderedArrayTable<T>::GoNext(void) {
+	while (currentLine < max_data_count) {
+		currentLine++; 
+		if (data[currentLine].key != std::string()) { return 1; }
+	} 
+	return 0;
+};
 template<class T>
 std::string unorderedArrayTable<T>::GetKey(void) const { return data[currentLine].key; };
 template<class T>
@@ -121,4 +141,19 @@ template<class T>
 T unorderedArrayTable<T>::Find(std::string key) { for (int i = 0; i < max_data_count; i++) if (data[i].key == key) return data[i].value; throw("Nothing found"); };
 template<class T>
 bool unorderedArrayTable<T>::Exist(std::string key) { for (int i = 0; i < max_data_count; i++) if (data[i].key == key) return true; return false; };
+template<class T>
+bool unorderedArrayTable<T>::operator==(unorderedArrayTable other) {
+	if (this->max_data_count != other.max_data_count)return false;
+	if (this->size != other.size)return false;
+	for (int i = 0; i < max_data_count; i++) if ((this->data[i] != other.data[i]))return false;
+	return true;
+}
+template<class T>
+unorderedArrayTable<T> unorderedArrayTable<T>::operator=(unorderedArrayTable other) {
+	this->max_data_count = other.max_data_count;
+	this->data = new TRec<T>[max_data_count];
+	this->size = other.size;
+	this->currentLine = other.currentLine;
+	for (int i = 0; i < max_data_size; i++) this->data[i] = other.data;
+};
 
