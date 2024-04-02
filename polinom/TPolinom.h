@@ -286,7 +286,8 @@ TPolinom TPolinom::SubPolinom(TPolinom& other) {
 
 TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 
-	
+
+
 	if (other.IsEmpty()) return other;
 	if (IsEmpty()) return *this;
 
@@ -302,26 +303,21 @@ TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 
 
 	while (!cp.IsEmpty()) {//    this/other
-		try {
-			//std::cout << " DIVISION \n";
-			factor = (cp.GetCurrentItem() / fmn);
 
-			ans.AddMonom(factor);
+		factor = (cp.GetCurrentItem() / fmn);
 
-			//cout << "\nafter operator cp\n" << cp << endl;
-			//cout << "\nfactor\n" << factor << endl;
+		ans.AddMonom(factor);
+		if (factor.coef == 0) factor.coef = 1;
+		//cout << "\nafter operator cp\n" << cp << endl;
+		//cout << "\nfactor\n" << factor << endl;
 
-			tmp.MultMonom(factor);
-			//std::cout << "ssss  "<<factor<<endl;
-			//std::cout << tmp .length<< endl;
-			cp.SubPolinom(tmp);
+		tmp.MultMonom(factor);
+		cp.SubPolinom(tmp);
 
-			tmp = other;
-			//cout << "\noperator tmp\n" << tmp << endl;
-			oper++;
-			if (oper > (other.length + 5)) break;
-		}
-		catch (...) { break; }
+		tmp = other;
+		//cout << "\noperator tmp\n" << tmp << endl;
+		oper++;
+		if (oper > (other.length + 5)) break;
 	}
 
 
@@ -356,8 +352,8 @@ TPolinom TPolinom::operator/(TPolinom other)
 
 	TPolinom tmp;
 	TPolinom ans(*this);
-	
 	ans.Division(other, tmp);
+
 	if (!tmp.IsEmpty()) {
 		throw "impossible division operation without remainder";
 	}

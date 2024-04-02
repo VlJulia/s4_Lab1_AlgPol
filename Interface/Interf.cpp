@@ -15,13 +15,13 @@ int hello() {
     cout << "4. Find | Найти элемент" << endl;
     cout << "5. Exist | Существует" << endl;
     cout << "6. Select table | Выбрать таблицу" << endl;
-    //cout << "6. Division (with remainder) | Деление с остатком" << endl;
     cout << "7. Derivative | Производная" << endl;
     cout << "8. Integral | Интеграл" << endl;
     cout << "9. Multiplication | Умножение" << endl;
    // cout << "10. Division (without remainder) | Деление (без остатка)" << endl;
     cout << "10. Difference | Разность" << endl;
     cout << "11. Sum | Сложение" << endl;
+    cout << "12. Division (with remainder) | Деление с остатком" << endl;
 
     cout << "0. Exit | Выход" << endl;
     try {
@@ -49,14 +49,14 @@ int main()
     TPolinom t2("X4Y3Z -2X2Y2Z3");
 
     TPolinom t3("X1Y3Z +3XYZ");
-    //TPolinom t4("5X1Y2Z3 -X4Y2Z3");
+    TPolinom t4("3XYZ^2");
     //TPolinom t5("-4XYZ +8XYZ");
     tb.Insert("name1", t1);
     tb.Insert("name2", t2);
     tb.Insert("name3", t3);
     tb.NextTabl(); tb.NextTabl(); tb.NextTabl(); tb.NextTabl();
 
-    //tb.Insert("name4", t4);
+    tb.Insert("name4", t4);
     //tb.Insert("name5", t5);
     //cout << 1 << tb << endl; //tb.NextTabl();
     //cout << 2 << tb << endl; tb.NextTabl();
@@ -117,14 +117,17 @@ int main()
                 cout << "Not exist" << endl;
             }
             break;
-        case -1:
+        case 12:
             //division
             cout << "Select polinom from table" << endl;
             cout << "Enter name of first operator" << endl;
             cin >> sn;
             cout << "Enter name of second operator" << endl;
             cin >> sn1;
-            cout << tb.Div(sn, sn1) << endl;
+            try {
+                cout << tb.Div(sn, sn1) << endl;
+            }
+            catch (...) { cout << "cant find key, or impossible operation\n"; break; }
             break;
         case 7:
             //derivative

@@ -229,21 +229,18 @@ template<class T>
 T Interf<T>::Div(string key1, string key2) //с остатком
 {
 	T p1, p2;
-	try {
 		p1 = current->Find(key1);
 		p2 = current->Find(key2);
-	}
-	catch (...) { std::cout << "cant find "<<endl; }
 	T ost;
-	T res = p1.Division(p2, ost);
-	std::cout << "res is " << res << " ost is" << ost<<endl;
+	p1 = p1.T::Division(p2,ost);
+	std::cout << "res is " << p1 << " ost is" << ost<<endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv=0;
 	std::cin >> otv;
-	if (otv) AddDialog(res);
+	if (otv) AddDialog(p1);
 	std::cout << "save ost? 0-no 1-yes" << endl;
 	std::cin >> otv;
 	if (otv) AddDialog(ost);
-	return res;
+	return p1;
 }
 
 template<class T>
