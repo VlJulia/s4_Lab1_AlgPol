@@ -302,24 +302,26 @@ TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 
 
 	while (!cp.IsEmpty()) {//    this/other
+		try {
+			//std::cout << " DIVISION \n";
+			factor = (cp.GetCurrentItem() / fmn);
 
-	    std::cout << " DIVISION \n";
-		factor = (cp.GetCurrentItem() / fmn);
-		
-		ans.AddMonom(factor);
+			ans.AddMonom(factor);
 
-		//cout << "\nafter operator cp\n" << cp << endl;
-		//cout << "\nfactor\n" << factor << endl;
+			//cout << "\nafter operator cp\n" << cp << endl;
+			//cout << "\nfactor\n" << factor << endl;
 
-		tmp.MultMonom(factor);
-		std::cout << "ssss  "<<factor<<endl;
-		std::cout << tmp .length<< endl;
-		cp.SubPolinom(tmp);
+			tmp.MultMonom(factor);
+			//std::cout << "ssss  "<<factor<<endl;
+			//std::cout << tmp .length<< endl;
+			cp.SubPolinom(tmp);
 
-		tmp = other;
-		//cout << "\noperator tmp\n" << tmp << endl;
-		oper++;
-		if (oper > (other.length+5)) break;
+			tmp = other;
+			//cout << "\noperator tmp\n" << tmp << endl;
+			oper++;
+			if (oper > (other.length + 5)) break;
+		}
+		catch (...) { break; }
 	}
 
 

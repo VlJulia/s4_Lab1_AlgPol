@@ -87,6 +87,7 @@ class Interf {
 	void calculate(string key1, double X = 0, double Y = 0, double Z = 0);
 	friend std::ostream& operator<<(std::ostream& os, Interf& tab)
 	{
+		os << "data count = " << tab.current->GetDataCount() << endl;
 		switch (tab.cur) {
 		case 0:
 			std::cout << "Tree ";
@@ -249,10 +250,7 @@ template<class T>
 inline T Interf<T>::derivative(string key, char md)
 {
 	T p1;
-	try {
-		p1 = current->Find(key);
-	}
-	catch (...) { std::cout << "cant find " << endl; }
+	p1 = current->Find(key);
 	T res = p1.derivative(md);
 	std::cout << "res is " << res <<  endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -265,10 +263,7 @@ template<class T>
 inline T Interf<T>::integral(string key, char md)
 {
 	T p1;
-	try {
 		p1 = current->Find(key);
-	}
-	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1.integral(md);
 	std::cout << "res is " << res << endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -282,11 +277,8 @@ inline T Interf<T>::Mult(string key1, string key2)
 {
 	T p1;
 	T p2;
-	try {
 		p1 = current->Find(key1);
 		p2 = current->Find(key2);
-	}
-	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1*p2;
 	std::cout << "res is " << res << endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -300,11 +292,8 @@ inline T Interf<T>::Sum(string key1, string key2)
 {
 	T p1;
 	T p2;
-	try {
 		p1 = current->Find(key1);
 		p2 = current->Find(key2);
-	}
-	catch (...) { std::cout << "cant find " << endl; }
 	T res = p1 + p2;
 	std::cout << "res is " << res << endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -318,11 +307,10 @@ inline T Interf<T>::Dif(string key1, string key2)
 {
 	T p1;
 	T p2;
-	try {
+
 		p1 = current->Find(key1);
 		p2 = current->Find(key2);
-	}
-	catch (...) { std::cout << "cant find " << endl; }
+	
 	T res = p1 - p2;
 	std::cout << "res is " << res << endl;
 	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
@@ -338,7 +326,7 @@ inline void Interf<T>::calculate(string key1, double X, double Y, double Z)
 	try {
 		p1 = current->Find(key1);
 	}
-	catch (...) { std::cout << "cant find " << endl; }
+	catch (...) { std::cout << "cant find " << endl; return; }
 	double res = p1.calculate(X, Y, Z);
 	std::cout << "res is " << res << endl;
 	return;

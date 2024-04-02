@@ -186,7 +186,7 @@ bool HashTblCh<T>::Insert(string key, T obj)
 	HsNode<T>* nNode = new HsNode<T>;
 	nNode->val = nr;
 	nNode->Next = nullptr;
-	if (First.u == nullptr) { First.id = id; First.u = nNode; }
+	if (First.u == nullptr) { First.id = id; First.u = nNode;  }
 	if (id_tbl[id] == nullptr) id_tbl[id] = nNode;
 	else {
 		HsNode<T>* tmp = id_tbl[id];
@@ -204,15 +204,24 @@ template<class T>
 bool HashTblCh<T>::Delete(std::string key)
 {
 	int id = HashFunc(key);
-	if (id_tbl[id] == nullptr) return 0;
+	if (id_tbl[id] == nullptr) { return 0; }
 	else {
 		HsNode<T>* tmp = id_tbl[id];
 		HsNode<T>* tmp2 = nullptr;
+		if (tmp->val.key == key) {
+			if (Last.u == tmp) NewLast();
+			if (First.u == tmp) { NewFirst(); }
+			if (tmp != nullptr) tmp2 = tmp->Next;
+			delete tmp;
+			id_tbl[id] = tmp2;
+			size--;
+			return 1;
+		}
 		while (!((tmp->Next == nullptr) || (tmp->Next->val.key == key))) { tmp = tmp->Next; }
-
-		if ((tmp->Next != nullptr) || (tmp->Next->val.key == key)) {
+		if (tmp->Next == nullptr) return 0;
+		if (tmp->Next->val.key == key) {
 			if (Last.u == tmp->Next) NewLast();
-			if (First.u == tmp->Next) NewFirst();
+			if (First.u == tmp->Next) { NewFirst(); }
 			if (tmp->Next != nullptr) tmp2 = tmp->Next->Next;
 			delete tmp->Next;
 			tmp->Next = tmp2;
@@ -229,7 +238,7 @@ T HashTblCh<T>::Find(std::string key)
 	int id = HashFunc(key);
 	HsNode<T>* tmp = id_tbl[id];
 	while (!((tmp->Next == nullptr) || (tmp->val.key == key))) tmp = tmp->Next;
-	if (tmp->val.key != key) throw "cant find";
+	if ((tmp->Next==nullptr)&&(tmp->val.key != key)) throw "cant find";
 	return tmp->val.value;
 }
 

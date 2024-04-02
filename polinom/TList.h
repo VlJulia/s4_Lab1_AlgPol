@@ -57,7 +57,7 @@ public:
 		for(int i=0;i<obj.length;i++)
 		{
 
-			if (tmp->value.coef>=0)os << "+";
+			//if (tmp->value.coef>=0)os << "+";
 			os << tmp->value;// << " next" << tmp->pNext;
 			//if (tmp == obj.pCurrent) os << "<-- current";
 			//if (tmp == obj.pPrevious) os << "<-- pr";

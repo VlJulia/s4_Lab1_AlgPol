@@ -36,6 +36,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const TMonom& obj) {
 		if (&obj == nullptr) { return os; }
+		if (obj.coef >= 0) os << "+";
 		os << obj.coef;
 		int a = obj.index;
 		if ((a / 100 != 0) && (a / 100 != 1)) { os<<"X^"; os<< std::to_string(a / 100); }

@@ -19,12 +19,18 @@ int hello() {
     cout << "7. Derivative | Производная" << endl;
     cout << "8. Integral | Интеграл" << endl;
     cout << "9. Multiplication | Умножение" << endl;
-    cout << "10. Division (without remainder) | Деление (без остатка)" << endl;
+   // cout << "10. Division (without remainder) | Деление (без остатка)" << endl;
+    cout << "10. Difference | Разность" << endl;
     cout << "11. Sum | Сложение" << endl;
-    cout << "12. Difference | Разность" << endl;
 
     cout << "0. Exit | Выход" << endl;
-    cin >> a;
+    try {
+        cin >> a;
+    }
+    catch (...) { 
+        cout << "not int" << endl; 
+        return -8;
+    }
     return a;
 }
 
@@ -35,6 +41,8 @@ TPolinom CreatePol(string sp) {
 
 int main()
 {
+    setlocale(LC_ALL, "Russian");
+
     Interf <TPolinom> tb(20);
     //примеры входных данных
     TPolinom t1("XYZ -2X2Y2Z3");
@@ -46,7 +54,7 @@ int main()
     tb.Insert("name1", t1);
     tb.Insert("name2", t2);
     tb.Insert("name3", t3);
-    tb.NextTabl();
+    tb.NextTabl(); tb.NextTabl(); tb.NextTabl(); tb.NextTabl();
 
     //tb.Insert("name4", t4);
     //tb.Insert("name5", t5);
@@ -72,6 +80,7 @@ int main()
             break;
         case 2:
             //добавить
+            
             cout << "Enter name of polinom" << endl;
             cin >> sn;
             cout << "Enter polinom" << endl;
@@ -82,13 +91,19 @@ int main()
             //удалить
             cout << "Enter name of polinom" << endl;
             cin >> sn;
-            tb.Delete(sn);
+            try {
+                tb.Delete(sn);
+            }
+            catch (...) { cout << "cant find key " << sn << endl; }
             break;
         case 4:
             //найти
             cout << "Enter name of polinom" << endl;
             cin >> sn;
-            cout << "Polinom:" << tb.Find(sn);
+            try {
+                cout << "Polinom:" << tb.Find(sn);
+            }
+            catch (...) { cout << "cant find key " << sn << endl; }
 
             break;
         case 5:
@@ -116,9 +131,12 @@ int main()
             cout << "Select polinom from table" << endl;
             cout << "Enter name of polinom" << endl;
             cin >> sn;
-            cout << "Enter char" << endl;
+            cout << "Enter mode" << endl;
             cin >> ch;
-            cout << tb.derivative(sn, ch) << endl;
+            try {
+                cout << tb.derivative(sn, ch) << endl;
+            }
+            catch (...) { cout << "cant find key " << sn << endl; }
             break;
         case 8:
             //integral
@@ -127,7 +145,10 @@ int main()
             cin >> sn;
             cout << "Enter char" << endl;
             cin >> ch;
-            cout << tb.integral(sn, ch) << endl;
+            try {
+                cout << tb.integral(sn, ch) << endl;
+            }
+            catch (...) { cout << "cant find key " << sn << endl; }
             break;
         case 9:
             //mult
@@ -136,15 +157,19 @@ int main()
             cin >> sn;
             cout << "Enter name of 2 polinom" << endl;
             cin >> sn1;
-            cout << tb.Mult(sn, sn1) << endl;
+            try {
+                cout << tb.Mult(sn, sn1) << endl;
+            }
+            catch (...) { cout << "cant find key " <<  endl; }
             break;
-        case 10:
+        case -2:
             //div
             cout << "Select polinom from table" << endl;
             cout << "Enter name of 1 polinom" << endl;
             cin >> sn;
             cout << "Enter name of 2 polinom" << endl;
             cin >> sn1;
+
             cout << tb.Div(sn, sn1) << endl;
             break;
         case 11:
@@ -154,16 +179,22 @@ int main()
             cin >> sn;
             cout << "Enter name of 2 polinom" << endl;
             cin >> sn1;
-            cout << tb.Sum(sn, sn1) << endl;
+            try {
+                cout << tb.Sum(sn, sn1) << endl;
+            }
+            catch (...) { cout << "cant find key " << endl; }
             break;
-        case 12:
+        case 10:
             //dif
             cout << "Select polinom from table" << endl;
             cout << "Enter name of 1 polinom" << endl;
             cin >> sn;
             cout << "Enter name of 2 polinom" << endl;
             cin >> sn1;
-            cout << tb.Dif(sn, sn1) << endl;
+            try {
+                cout << tb.Dif(sn, sn1) << endl;
+            }
+            catch (...) { cout << "cant find key "  << endl; }
             break;
         case 6: 
             cout << "Select table:" << endl;
@@ -199,10 +230,9 @@ int main()
                 break;
             }
             break;
-        
+        case 0: exit(0);
         default:
             cout << "Wrong number" << endl;
-            break;
         }
     } while (f != 0);
 }
