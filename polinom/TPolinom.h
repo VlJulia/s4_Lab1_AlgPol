@@ -11,19 +11,50 @@ class TPolinom : public THeadList<TMonom>
 {
 public:
 	TPolinom();
-	TPolinom(TPolinom& other);
-	TPolinom(std::string str);
-	TPolinom& operator=(TPolinom& other); // присваивание
-	TPolinom& operator+(TPolinom& q); // сложение полиномов
-
-	// дополнительно можно реализовать:
-	void AddMonom(TMonom newMonom); // добавление монома
-	TPolinom MultMonom(TMonom monom); // умножение мономов
-	TPolinom AddPolinom(TPolinom& other); // добавление полинома
-	TPolinom operator*(double c); // умножение полинома на число
-	TPolinom operator* (TPolinom& other); // умножение полиномов
-	bool operator==(TPolinom& other); // сравнение полиномов на равенство
+	TPolinom(const TPolinom& other);
+	TPolinom(string str);
+	void AddMonom(TMonom monom); // добавление монома
 	string ToString(); // перевод в строку
+
+	// МАТЕМАТИЧЕСКИЕ ОПЕРАЦИИ:
+	TPolinom MultMonom(TMonom monom); // умножение мономов
+	TPolinom DivMonom(TMonom monom);//деление мономов 
+	TPolinom AddPolinom(TPolinom& other); // добавление полинома
+	TPolinom SubPolinom (TPolinom& other); //  вычитание полинома
+	TPolinom SubMonom(TMonom monom); // вычитание монома
+	TPolinom Division(TPolinom& other,TPolinom& ost); // Деление полиномов с остатком
+	double calculate(double X = 0, double Y = 0, double Z = 0);
+
+
+	//              ОПЕРАТОРЫ:
+
+	TPolinom operator=(TPolinom other);
+	bool operator==(TPolinom& other); // сравнение полиномов на равенство
+	//TPolinom& operator=(TPolinom& other); // присваивание
+
+	TPolinom operator+(TPolinom other); // сложение полиномов
+	TPolinom operator+(TMonom monom); // сложение c мономом
+
+	TPolinom operator- (TPolinom other); //  вычитание полинома
+	TPolinom operator- (TMonom monom); //  вычитание монома
+
+	TPolinom operator*(double c); // умножение полинома на число
+	TPolinom operator* (TPolinom other); // умножение полиномов
+	TPolinom operator* (TMonom monom); // умножение на моном
+
+	TPolinom operator/ (TPolinom other); // Деление полиномов без остатка (если отстаток, то будет исключение )
+	TPolinom operator/ (TMonom monom);
+	TPolinom operator/(double c); // деление полинома на число
+
+	TPolinom derivative();//по всем переменным
+	friend void derivative(TPolinom& other) { other = other.derivative(); }//по всем переменным
+	TPolinom derivative(char md);
+	friend void derivative(TPolinom& other, char md) { other = other.derivative(md); }
+
+	TPolinom integral();//по всем переменным
+	friend void integral(TPolinom& other) { other = other.integral(); }//по всем переменным
+	TPolinom integral(char md);
+	friend void integral(TPolinom& other, char md) { other = other.integral(md); }
 };
 
 TPolinom::TPolinom() :THeadList<TMonom>::THeadList()
@@ -31,23 +62,21 @@ TPolinom::TPolinom() :THeadList<TMonom>::THeadList()
 
 }
 
-TPolinom::TPolinom(TPolinom& other):THeadList<TMonom>::THeadList()
+TPolinom::TPolinom(const TPolinom& other):THeadList<TMonom>::THeadList()
 {
-	TNode<TMonom>* st = other.pCurrent;
+	if (other.length==0) return;
 	TMonom tmp;
-	other.Reset();
-
-	while (!other.IsEnd()) {
-		TMonom tmp = other.pCurrent->value;
-		InsertLast(tmp);
-		other.GoNext();
+	TNode<TMonom>* st = other.pFirst;
+	for (int i = 0; i < other.length; i++) {
+		
+		InsertLast(st->value);
+		if (st == other.pPrevious) pPrevious = pLast;
+		if (st == other.pCurrent) pCurrent = pLast;
+		st= st->pNext;
 	}
-	if (!other.IsEmpty()) {
-		TMonom tmp = other.pCurrent->value;
-		InsertLast(tmp);
-	}
-	while (other.pCurrent != st) { other.GoNext(); GoNext(); }
-	length = other.length;
+	pHead->pNext = pFirst;
+	if (other.pHead == other.pPrevious) pPrevious = pHead;
+	pLast->pNext = pHead;
 	st = nullptr;
 	return;
 }
@@ -71,123 +100,42 @@ TPolinom::TPolinom(string str)
 	}
 	if (s != "") AddMonom(TMonom(s));
 
-		/*
-		bool st = 0;
-		char c;
-		int i = 0;
-		TMonom m;
+}
 
-		int* mon_ind = new int[3];
-		mon_ind[0] = 0; mon_ind[1] = 0; mon_ind[2] = 0;
-		int w = 0;
-		int p = 1;//-coef or +
-		while ( i < str.size()) {
-			c = str[i];
-			if (c == ' ') { i++; continue; }
-			if ((c == '-') || (c == '+')) {
-				if (c == '+') p = 1;
-				else p = -1;
-				i++;
-				continue;
-			}
 
-			if ((c >= '0') && (c <= '9')) {
-				size_t d = 0;
-				double a = stod(&str[i], &d);
-				if (!st) m.SetCoef(p*a);
-				i += d;
-				continue;
-			}
-			if ((c == 'X')) {
-				//std::cout << "i= " << i;
-				if ((i + 1 < str.size()) && (str[i + 1] != 'Y')) w++;
-				if ((i + 1 < str.size()) && (str[i + 1] == '^')) {
-					i += 2;
-					size_t d = 0;
-					int a = stoi(&str[i], &d);
-					i += d;
-					mon_ind[0] = a;
-				}
-				else { mon_ind[0] = 1; i++; }
-				w++;
-				c = str[i];
-			}
-			//std::cout << c;
-			if (c == 'Y') {
-				if ((i + 1 < str.size()) && (str[i + 1] != 'Z')) w++;
-				if ((i + 1 < str.size()) && (str[i + 1] == '^')) {
-					i += 2;
-					size_t d = 0;
-					int a = stoi(&str[i], &d);
-					i += d;
-					mon_ind[1] = a;
-				}
-				else { mon_ind[1] = 1; i++; }
-				w++;
-				c = str[i];
-			}
-			if (c == 'Z') {
-				if ((i+1<str.size())&&(str[i + 1] == '^')) {
-					i += 2;
-					size_t d = 0;
-					int a = stoi(&str[i], &d);
-					i += d;
-					mon_ind[2] = a;
-				}
-				else { mon_ind[2] = 1; i++; }
-				w++;
-				c = str[i];
-			}
-			//std::cout << c;
-			if (w >= 3) {
-				m.SetIndex(mon_ind[0] * 100 + mon_ind[1] * 10 + mon_ind[2]);
-				mon_ind[0] = 0;
-				mon_ind[1] = 0;
-				mon_ind[2] = 0;
-				AddMonom(m);
-				//std::cout << m<<" ";
-				m.coef = 0;
-				w=0;
-			i++;
+void TPolinom::AddMonom(TMonom monom)
+{
+	//std::cout << "\nADD MONOM STATUS\n" << *this<<endl<<"MONOM IS"<<m<<endl;
+	
+	if (monom.GetCoef() == 0) return;
+
+	if (IsEmpty()) { InsertFirst(monom);  return; }
+	Reset();
+	for (int i = 0; i < length; i++) {
+		
+		if (GetCurrentItem().index < monom.index) {
+			if (IsEnd()) { InsertLast(monom); return; }
+			GoNext();
 			continue;
-			}
-			i++;
 		}
-		//AddMonom(m);
-		*/
-}
+		if (GetCurrentItem().index == monom.index) {
+			int newcoef = monom.coef + GetCurrentItem().coef;
+			if (newcoef == 0) {
+				DeleteCurrent();
+				return;
+			}
+			pCurrent->value.coef = newcoef;
+			return;
+		}
+		if (GetCurrentItem().index > monom.index) {
 
-
-TPolinom& TPolinom::operator=(TPolinom& other)
-{
-	//std::cout << "-----1----" << endl;
-	Clear();
-	if (other.IsEmpty()) return *this;
-	TNode<TMonom>* st = other.pCurrent;
-	TMonom tmp;
-	other.Reset();
-	while (!other.IsEnd()) {
-		tmp = other.pCurrent->value;
-		InsertLast(tmp);
-		other.GoNext();
+			InsertCurrent(monom);
+			
+			return;
+		}
 	}
-	tmp = other.pCurrent->value;
-	InsertLast(tmp);
-	other.GoNext();
-	while (other.pCurrent != st) { other.GoNext(); GoNext(); }
-	length = other.length;
-	st = nullptr;
-	return *this;
-}
 
-void TPolinom::AddMonom(TMonom m)
-{
-	//if (!IsEmpty()) std::cout << GetCurrentItem();
-
-	if (m.GetCoef() == 0) return;
-
-	if (IsEmpty()) { InsertFirst(m);  return; }
-
+	/*
 	if (((length == 1) && (pFirst->value.index < m.index))) { InsertLast(m);  
 	return; }
 	if (((length == 1) && (pFirst->value.index > m.index))) {
@@ -216,14 +164,14 @@ void TPolinom::AddMonom(TMonom m)
 		InsertCurrent(m); return;
 	}
 	//std::cout << "  2   MONOM =" << m << " Polinom is  " << *this;
-	
+	*/
 }
 
 TPolinom TPolinom::MultMonom(TMonom monom)
 {
+	Reset();
 	if (IsEmpty()) return *this;
 	if (monom.coef == 0) { Clear(); return *this; }
-	Reset();
 	TMonom m;
 	while (!IsEnd())
 	{
@@ -238,90 +186,11 @@ TPolinom TPolinom::MultMonom(TMonom monom)
 	return *this;
 }
 
-TPolinom& TPolinom::operator+(TPolinom& other)
-{
-	if (other.IsEmpty()) return *this;
-	//std::cout << "Other " << other<<endl;
-	if (this->IsEmpty()) return other;
-
-	if (length >= other.length) {
-		TPolinom* tmp = new TPolinom(*this);
-		//std::cout << "   +  tmp 1  " << *tmp ;
-	other.Reset();
-	while (!other.IsEnd()) {
-		tmp->AddMonom(other.GetCurrentItem());
-		//std::cout << "   +  tmp "  << *tmp ;
-		other.GoNext();
-	}
-	tmp->AddMonom(other.GetCurrentItem());
-	//std::cout << "   +  tmp r  " << *tmp;
-	return *tmp;
-	}
-	else return (other + *this);
-}
-
 TPolinom TPolinom::AddPolinom(TPolinom& other)
 {
 	*this = *this + other;
 	return *this;
 }
-
-TPolinom TPolinom::operator*(double c)
-{
-	Reset();
-	if (IsEmpty()) return *this;
-	if (c == 0) { TPolinom* tmp = new TPolinom(); return *tmp; }
-	TPolinom* tmp = new TPolinom(*this);
-	tmp->Reset();
-	while (!tmp->IsEnd()) {
-		tmp-> pCurrent->value.coef *= c;
-		tmp->GoNext();
-	}
-	tmp->pCurrent->value.coef *= c;
-	//std::cout <<"TMP"<< *tmp<<"hh";
-	return *tmp;
-}
-
-TPolinom TPolinom::operator*(TPolinom& other)
-{
-
-
-	if (other.IsEmpty()) return other;
-	if (IsEmpty()) return *this;
-	TPolinom* tmp = new TPolinom(*this);
-	TPolinom* ans = new TPolinom();
-	other.Reset();
-	Reset();
-	while (!other.IsEnd()) {
-		tmp->MultMonom(other.GetCurrentItem());
-	    //std::cout << "TMP" << *tmp;
-		ans->AddPolinom(*tmp);
-		//std::cout << "ans" << *ans;
-		tmp = this;
-		other.GoNext();
-	}
-	tmp->MultMonom(other.GetCurrentItem());
-	ans->AddPolinom(*tmp);
-	return *ans;
-}
-
-bool TPolinom::operator==(TPolinom& other)
-{
-	if (length != other.length) return false;
-	Reset();
-	other.Reset();
-	for (int i = 0; i < length; i++) {
-		TMonom a, b;
-		a = other.GetCurrentItem();
-		b = GetCurrentItem();
-		GoNext();
-		other.GoNext();
-		
-		if (!(a == b)) { return false; }
-	}
-	return true;
-}
-
 
 string TPolinom::ToString()
 {
@@ -380,4 +249,298 @@ string TPolinom::ToString()
 	if ((a != 0) && (a != 1)) { result += "Z^"; result += std::to_string(a); }
 	if (a == 1) { result += "Z"; }
 	return result;
+}
+
+TPolinom TPolinom::DivMonom(TMonom monom) {
+	
+
+	if (IsEmpty()) return *this;
+	if (monom.coef == 0) { Clear(); throw "division by 0";}
+	Reset();
+	TMonom m;
+	while (!IsEnd())
+	{
+		m = GetCurrentItem() / monom;
+		SetCurrentItem(m);
+		GoNext();
+	}
+	m = GetCurrentItem() / monom;
+	SetCurrentItem(m);
+	GoNext();
+	return *this;
+}
+
+TPolinom TPolinom::SubPolinom(TPolinom& other) {
+
+	other.Reset();
+	
+	while (!other.IsEnd())
+	{
+		SubMonom(other.GetCurrentItem());
+		other.GoNext();
+	}
+	SubMonom(other.GetCurrentItem());
+
+	return *this;
+}; //  вычитание полинома
+
+TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
+
+	
+	if (other.IsEmpty()) return other;
+	if (IsEmpty()) return *this;
+
+	TPolinom tmp(other);
+	TPolinom cp(*this);
+	//std::cout << "cp is \n" << cp << endl;
+	TMonom factor;
+	TMonom fmn(other.pFirst->value);
+	TPolinom ans;
+	other.Reset();
+	cp.Reset();
+	int oper = 0;
+
+
+	while (!cp.IsEmpty()) {//    this/other
+
+	    std::cout << " DIVISION \n";
+		factor = (cp.GetCurrentItem() / fmn);
+		
+		ans.AddMonom(factor);
+
+		//cout << "\nafter operator cp\n" << cp << endl;
+		//cout << "\nfactor\n" << factor << endl;
+
+		tmp.MultMonom(factor);
+		std::cout << "ssss  "<<factor<<endl;
+		std::cout << tmp .length<< endl;
+		cp.SubPolinom(tmp);
+
+		tmp = other;
+		//cout << "\noperator tmp\n" << tmp << endl;
+		oper++;
+		if (oper > (other.length+5)) break;
+	}
+
+
+	ost = cp;
+	return ans;
+
+}
+
+double TPolinom::calculate(double X, double Y, double Z)
+{
+	if (IsEmpty())	return 0.0;
+	double s = 0;
+	for (int i = 0; i < length; i++) {
+		s += GetCurrentItem().calculate(X, Y, Z);
+		GoNext();
+	}
+	return s;
+}
+
+TPolinom TPolinom::SubMonom(TMonom monom) {
+	
+	int a = monom.coef;
+	a *= -1;
+	monom.SetCoef(a);
+	this->AddMonom(monom);
+	
+	return *this;
+};
+
+TPolinom TPolinom::operator/(TPolinom other)
+{
+
+	TPolinom tmp;
+	TPolinom ans(*this);
+	
+	ans.Division(other, tmp);
+	if (!tmp.IsEmpty()) {
+		throw "impossible division operation without remainder";
+	}
+	return ans;
+}
+
+TPolinom TPolinom::operator/(TMonom monom)
+{
+
+	TPolinom p(*this);
+	p.DivMonom(monom);
+	return p;
+}
+
+TPolinom TPolinom::operator/(double c)
+{
+	Reset();
+	if (IsEmpty()) return *this;
+	if (c == 0) { throw "Division by 0"; }
+	TPolinom* tmp = new TPolinom(*this);
+	tmp->Reset();
+	while (!tmp->IsEnd()) {
+		tmp->pCurrent->value.coef /= c;
+		tmp->GoNext();
+	}
+	tmp->pCurrent->value.coef /= c;
+	//std::cout <<"TMP"<< *tmp<<"hh";
+	return *tmp;
+}
+
+TPolinom TPolinom::derivative()
+{
+	TPolinom p;
+	for (int i = 0; i < length; i++) {
+		p.AddMonom(GetCurrentItem().derivative());
+		cout << GetCurrentItem()<<"  "<< GetCurrentItem().derivative() << endl;
+		GoNext();
+	}
+	return p;
+}
+
+TPolinom TPolinom::derivative(char md)
+{
+	TPolinom p;
+	for (int i = 0; i < length; i++) {
+		p.AddMonom(GetCurrentItem().derivative(md));
+		cout << GetCurrentItem() << "  " << GetCurrentItem().derivative(md) << endl;
+		GoNext();
+	}
+	return p;
+}
+
+TPolinom TPolinom::integral(char md)
+{
+	TPolinom p;
+	for (int i = 0; i < length; i++) {
+		p.AddMonom(GetCurrentItem().integral(md));
+		GoNext();
+	}
+	return p;
+}
+
+TPolinom TPolinom::integral()
+{
+	TPolinom p;
+	for (int i = 0; i < length; i++) {
+		p.AddMonom(GetCurrentItem().integral());
+		GoNext();
+	}
+	return p;
+}
+
+TPolinom TPolinom::operator+(TPolinom other)
+{
+	if (other.IsEmpty()) return *this;
+	//std::cout << "Other " << other<<endl;
+	if (this->IsEmpty()) return other;
+
+	if (length >= other.length) {
+		TPolinom* tmp = new TPolinom(*this);
+		//std::cout << "   +  tmp 1  " << *tmp ;
+	other.Reset();
+	while (!other.IsEnd()) {
+		tmp->AddMonom(other.GetCurrentItem());
+		//std::cout << "   +  tmp "  << *tmp ;
+		other.GoNext();
+	}
+	tmp->AddMonom(other.GetCurrentItem());
+	//std::cout << "   +  tmp r  " << *tmp;
+	return *tmp;
+	}
+	else return (other + *this);
+}
+
+TPolinom TPolinom::operator+(TMonom monom)
+{
+	if (monom.coef == 0) return *this;
+	AddMonom(monom);
+	return *this;
+}
+
+TPolinom TPolinom::operator*(double c)
+{
+
+	if (IsEmpty()) return *this;
+	if (c == 0) { TPolinom tmp; return tmp; }
+	TPolinom tmp(*this);
+	for (int i = 0; i < tmp.length; i++) {
+
+		tmp.pCurrent->value.coef *= c;
+		tmp.GoNext();
+	}
+	return tmp;
+}
+
+TPolinom TPolinom::operator*(TPolinom other)
+{
+
+	if (other.IsEmpty()) return other;
+	if (IsEmpty()) return *this;
+	TPolinom* tmp = new TPolinom(*this);
+	TPolinom* ans = new TPolinom();
+	other.Reset();
+	Reset();
+	while (!other.IsEnd()) {
+		tmp->MultMonom(other.GetCurrentItem());
+	    //std::cout << "TMP" << *tmp;
+		ans->AddPolinom(*tmp);
+		//std::cout << "ans" << *ans;
+		tmp = this;
+		other.GoNext();
+	}
+	tmp->MultMonom(other.GetCurrentItem());
+	ans->AddPolinom(*tmp);
+	return *ans;
+}
+
+TPolinom TPolinom::operator* (TMonom monom) {
+	TPolinom p(*this);
+	p.MultMonom(monom);
+	return p;
+}; // умножение на моном
+
+TPolinom TPolinom::operator-(TMonom monom){
+	int a = monom.coef;
+	a *= -1;
+	monom.SetCoef(a);
+	TPolinom p(*this);
+	p.AddMonom(monom);
+	return p;
+
+}
+
+TPolinom TPolinom::operator- (TPolinom other) {
+	other.Reset();
+	TPolinom p(*this);
+	while (!other.IsEnd())
+	{
+		p.SubMonom(other.GetCurrentItem());
+		other.GoNext();
+	}
+	p.SubMonom(other.GetCurrentItem());
+	return p;
+}; //  вычитание полинома
+
+TPolinom TPolinom::operator=(TPolinom other)
+{
+	THeadList<TMonom>::operator=(other);
+	return *this;
+}
+
+bool TPolinom::operator==(TPolinom& other)
+{
+	if (length != other.length) return false;
+	if (this == &other) return true;
+	Reset();
+	other.Reset();
+	for (int i = 0; i < length; i++) {
+		TMonom a, b;
+		a = other.GetCurrentItem();
+		b = GetCurrentItem();
+		GoNext();
+		other.GoNext();
+		
+		if (!(a == b)) { return false; }
+	}
+	return true;
 }

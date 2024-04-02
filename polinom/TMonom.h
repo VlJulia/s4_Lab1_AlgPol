@@ -1,26 +1,31 @@
 #pragma once
 #include <iostream>
 #include <string>
-struct TMonom
+class TMonom 
 {
+public:
 	double coef; // коэффициент монома
 	int index; // индекс (свертка степеней)
-
-
 	TMonom(double coef = 0, int degX = 0, int degY = 0, int degZ = 0);
-	TMonom(string s);
+	TMonom(std::string s);
 	void SetCoef(int cval) { coef = cval; }
 	double GetCoef(void) { return coef; }
 
 	void SetIndex(int ival) { index = ival; }
 	int GetIndex(void) { return index; }
-
-
+	TMonom operator+(TMonom other);
+	friend TMonom operator*(double c, TMonom other);
+	friend TMonom operator/(double c, TMonom other);
+	TMonom operator-(TMonom other);
+	TMonom operator/(TMonom other);
+	TMonom operator*(TMonom other);
+	double calculate(double X=0, double Y = 0, double Z = 0);
 	bool operator==(TMonom& other) { 
 		return ((index == other.index) && (coef == other.coef));
 	}
 
 	bool operator==(const TMonom& other) {
+		if (this == &other) return true;
 		return ((index == other.index) && (coef == other.coef));
 	}
 	bool operator>(const TMonom& other);
@@ -44,7 +49,23 @@ struct TMonom
 		if (a == 1) os << "Z"; 
 		return os;
 	}
+
+	TMonom derivative();
+	friend void derivative(TMonom& other) { other = other.derivative(); }
+
+	TMonom derivative(char md);
+	friend void derivative(TMonom& other, char md) { other = other.derivative(md); }
+
+	TMonom integral();
+	friend void integral(TMonom& other) { other = other.integral(); }
+
+	TMonom integral(char md);
+	friend void integral(TMonom& other,char md) { other = other.integral(md); }
+
+private:
+	double St(int st, double c);
 };
+
 TMonom::TMonom(double coef, int degX, int degY, int degZ) {
 	this->coef = coef;
 	this->index = (degX%10) * 100 + (degY%10) * 10 + (degZ%10);//just in case
@@ -68,7 +89,7 @@ TMonom::TMonom(string s) {
 		}
 	for (; tmp < s.size(); tmp++) str[tmp] = ' ';
 	index = 0;
-	coef = 0;
+	coef = 1;
 	int p = 1;//-coef or +
 	int i = 0;
 	int t = 0;
@@ -128,3 +149,157 @@ TMonom  TMonom::operator=(const TMonom& other) {
 	this->index = other.index;
 	return *this;
 };
+
+TMonom TMonom::operator+(TMonom other) {
+	if (index != other.index) throw "different degrees";
+	TMonom ans;
+	ans.SetCoef(coef + other.coef);
+	ans.index = index;
+	return ans;
+
+};
+TMonom TMonom::operator-(TMonom other) {
+	if (index != other.index) throw "different degrees";
+	TMonom ans;
+	ans.SetCoef(coef - other.coef);
+	ans.index = index;
+	return ans;
+
+};
+TMonom TMonom::operator/(TMonom other) {
+	TMonom ans;
+	if (other.coef == 0) throw "division by 0";
+	ans.SetCoef(coef/other.coef);
+	ans.index = index-other.index;
+	return ans;
+};
+TMonom TMonom::operator*(TMonom other) {
+	TMonom ans;
+	ans.SetCoef(coef * other.coef);
+	ans.index = index + other.index;
+	return ans;
+}
+double TMonom::calculate(double X, double Y, double Z)
+{
+	if ((coef==0)||(X==0)||(Y==0)||(Z==0)) return 0.0;
+	double ob=1;
+	ob *= St(index / 100,X);
+	ob *= St((index % 100) / 10, Y);
+	ob *= St((index % 100) % 10, Z);
+	ob *= coef;
+	return ob;
+}
+TMonom operator*(double c, TMonom other) {
+	TMonom ans;
+	ans.SetCoef(other.coef*c);
+	ans.index = other.index;
+	return ans;
+};
+TMonom operator/(double c, TMonom other) {
+	TMonom ans;
+	ans.SetCoef(other.coef / c);
+	ans.index = other.index;
+	return ans;
+};
+
+double TMonom::St(int st, double c) {
+
+	double p = 1;
+	for (int i = 0; i < st;) {
+		if ((i * 2 < st) && (i != 0)) {
+			p *= p;
+			i *= 2;
+		}
+		else { p *= c; i++; }
+	}
+	return p;
+}
+
+TMonom TMonom::derivative() {
+	double c= coef;
+	int x = index/100, y = (index%100)/10, z = (index % 100) % 10;
+	c *= x * y * z;
+	x -= 1;
+	y -= 1;
+	z -= 1;
+	TMonom n(c, x,y,z);
+	return n;
+}
+
+TMonom TMonom::integral() {
+	double c = coef;
+	int x = index / 100, y = (index % 100) / 10, z = (index % 100) % 10;
+	x += 1;
+	y += 1;
+	z += 1;
+	c /= (x * y * z);
+	TMonom n(c, x, y, z);
+	return n;
+};
+
+TMonom TMonom::derivative(char md)
+{
+
+	double c = coef;
+	int x = index / 100, y = (index % 100) / 10, z = (index % 100) % 10;
+	switch (md)
+	{
+	case 'x':
+	case 'X':
+	{
+		c *= x;
+		x -= 1;
+		break;
+	}
+	case 'y':
+	case 'Y':
+	{
+		c *= y;
+		y -= 1;
+		break;
+	}
+	case 'z':
+	case 'Z':
+	{
+		c *= z;
+		z -= 1;
+		break;
+	}
+	default:
+		break;
+	}
+	return TMonom(c,x,y,z);
+}
+
+TMonom TMonom::integral(char md)
+{
+	double c = coef;
+	int x = index / 100, y = (index % 100) / 10, z = (index % 100) % 10;
+	switch (md)
+	{
+	case 'x':
+	case 'X':
+	{
+		x += 1;
+		c /= x;
+		break;
+	}
+	case 'y':
+	case 'Y':
+	{
+		y += 1;
+		c /= y;
+		break;
+	}
+	case 'z':
+	case 'Z':
+	{
+		z += 1;
+		c /= z;
+		break;
+	}
+	default:
+		break;
+	}
+	return TMonom(c, x, y, z);
+}

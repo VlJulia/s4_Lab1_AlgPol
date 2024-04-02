@@ -6,24 +6,28 @@ using namespace std;
 
 template <class T>
 struct Item {
-	T info; //полином 
+	TRec<T> info; //полином 
 	Item* next=nullptr; // ссылка на следующий
 };
 
 template <class T>
 class ListTable : public Table<T> {
 protected:
-	unsigned int size = 0;//текущий размер
-	unsigned int max_data_count = 0;//сколько всего может быть записей
-
-	Item* first = nullptr;
-	Item* current = nullptr;
-	Item* prev = nullptr;
-
+	Item<T>* first = nullptr;
+	Item<T>* current = nullptr;
+	Item<T>* prev = nullptr;
 public:
-	int GetDataCount() const { return size }// количество записей
+	ListTable(int _max_data_count = -1) { max_data_count = _max_data_count; }
+	~ListTable() {
+		Reset();
+		while (size != 0) {
+			Delete(GetKey());
+		}
+}
+	ListTable(ListTable& other);
+	int GetDataCount() const { return size; }// количество записей
 	bool IsFull() const {
-			return true; // оно бесконечно
+		return (max_data_count == size); // оно может быть бесконечно, в этом случае -1
 	}  // заполнена?
 	
 	   //навигация 
@@ -32,230 +36,181 @@ public:
 		prev = nullptr;
 		return 0;
 	}// установить на первую запись
-	int IsTabEnded(void) { return current->next == nullptr } // таблица завершена?
-	int GoNext(void) {
-		if (size == 0) throw "size =0 ";
-		prev = current;
-		if (!IsTabEnded()) {
-			current = current->next;
-		}
-		else Reset();
-		return 1;
-	} // переход к следующей записи
-	string GetKey(void) {
-		if (current != nullptr) {
-			return current->info.name;
-		}
-		else {
-			throw "Empty";
-		}
-	}
-	T GetValuePtr(void) {
-		if (current != nullptr) {
-			return current->info;
-		}
-		else {
-			throw "Empty";
-		}
-	}
-	//
+	int IsTabEnded(void) const { return (current==nullptr || current->next == nullptr); } // таблица завершена?
+	int GoNext(void); // переход к следующей записи
+	string GetKey(void) const;
+	T GetValuePtr(void) const;
+	
+	bool Insert(string key, T obj);//  T      вставляем позади Current
+	bool Delete(std::string key);
+	T Find(std::string key);
+	bool Exist(std::string key);
 
-	bool Add(T obj) {//  T = Polinom     вставляем позади Current
-		Item<T>* newItem = new Item<T>;
-		newItem->info = obj;
-		newItem->next = first;
-		if (size == 0) { first = newItem; current = newItem; }
-		else {
-			bool b = Exist(obj.name);
-			if (b) { delete newItem; return false; }
-			else { 
-				newItem->next = current;
-				if (Current != first) {
-					prev->next = newItem;
-				}
-				else {
-					first = newItem;
-				}
-				prev = newItem;
-			}
-		}
+	ListTable<T> operator=(ListTable<T> other);
+	bool operator==(ListTable<T>& other) const;
+
+};
+
+template<class T>
+ListTable<T>::ListTable(ListTable& other)
+{
+	Reset();
+	if (other.size == 0) return;
+	Item<T>* tmp = other.first;
+	first = new Item<T>;
+	first->info = tmp->info;
+	current = first;
+	Item<T>* tmp2 = first;
+
+	while (tmp->next!=nullptr) {
+		tmp = tmp->next;
+		tmp2->next = new Item<T>;
+		tmp2->next->info = tmp->info;
+		tmp2 = tmp2->next;
+	}
+}
+
+template<class T>
+int ListTable<T>::GoNext(void)
+{
+	if (size == 0) throw "size =0 ";
+	prev = current;
+	if (!IsTabEnded()) {
+		current = current->next;
+	}
+	else Reset();
+	return 1;
+}
+
+template<class T>
+string ListTable<T>::GetKey(void) const
+{
+	if (current != nullptr) {
+		return current->info.key;
+	}
+	else {
+		throw "Empty";
+	}
+}
+
+template<class T>
+T ListTable<T>::GetValuePtr(void) const
+{
+	if (current != nullptr) {
+		return current->info.value;
+	}
+	else {
+		throw "Empty";
+	}
+}
+
+template<class T>
+bool ListTable<T>::Insert(string key, T obj)
+{
+	if (IsFull()) throw "is full";
+	TRec<T> nr; nr.key = key; nr.value = obj;
+	Item<T>* newItem = new Item<T>;
+	newItem->info = nr;
+	newItem->next = first;
+	if (size == 0) {
+		first = newItem;
+		current = newItem;
 		size++;
 		return true;
 	}
-	bool Delete(std::string key) {
-		if (size == 0) return true;
-		Item<T>* tmp = first;
-		Item<T>* tmp_w = nullptr;
-		while (tmp != nullptr && tmp->info->name != key) {
-			tmp_w = tmp;
-			tmp = tmp->next;
-		}
-		if (tmp->info->name == key) {
-			if ((tmp == current)|| (tmp == prev))  Reset();
-			if (tmp == first) { 
-				if (first == current) { GoNext(); prev = nullptr; }
-			first = tmp->next; }
-			tmp_w->next = tmp->next;
-			delete tmp;
-			size--;
+	else {
+		bool b = Exist(key);
+		if (b) { delete newItem;  return false; }
+		else {
+			newItem->next = current;
+			if (current != first) {
+				prev->next = newItem;
+			}
+			else {
+				first = newItem;
+			}
+			prev = newItem;
 		}
 	}
-	T Find(std::string key) {
-		if (size == 0) throw "size=0";
-		Item<T>* tmp = first;
-		Item<T>* tmp_w = nullptr;
-		while (tmp != nullptr && tmp->info->name != key) {
-			tmp_w = tmp;
-			tmp = tmp->next;
-		}
-		if (tmp->info->name == key) return tmp->info;
-		throw "cant find";
-	}
-	bool Exist(std::string key) {
-		if (size == 0) return false;
-		Item<T>* tmp = first;
-		Item<T>* tmp_w = nullptr;
-		while (tmp != nullptr && tmp->info->name != key) {
-			tmp_w = tmp;
-			tmp = tmp->next;
-		}
-		return (tmp->info->name == key);
-	}
+	size++;
+	return true;
+}
 
-};
-///*
-//template <class T>
-//int Table<T>::GetDataCount() const {
-//	return size;
-//};
-//template <class T>
-//bool Table<T>::IsEmpty() const {
-//	return size == 0;
-//}
-//template<class T>
-//bool Table<T>::IsFull() const
-//{
-//	return max_data_count == size;
-//}
-///*
-//
-//
-//
-//class ListTable : Table {
-//	virtual void AddPolinom(Polinom<Tn, Tp> pol) {
-//		Item* cur, * prev;
-//		cur = ptab;
-//		if (!cur) {
-//			cur.info = pol;
-//		}
-//		while (cur->next) { /* есть другие элементы */
-//			prev = cur;
-//			cur = cur->next;
-//		}
-//		cur.info = pol;
-//	}
-//	virtual void DelPolinom(std::string polinom_name) {
-//		Item* cur, * prev;
-//		cur = ptab;
-//		/* проверяем, есть ли в таблице элементы */
-//		if (!cur)
-//			return -1; /* таблица пуста – отказ */
-//		/* возможно, требуется удалить первый элемент таблицы */
-//		if (cur.info.name == polinom_name) {
-//			/* удаляем первый элемент */
-//			ptab = cur->next;
-//			delete cur;
-//			return 0;
-//		}
-//		/* ищем удаляемый элемент среди других элементов таблицы */
-//		while (cur->next) { /* есть другие элементы */
-//			prev = cur;
-//			cur = cur->next;
-//			if (cur.info.name == polinom_name) {
-//				/* нашли элемент, который надо удалить */
-//				prev->next = cur->next;
-//				delete cur;
-//				return 0;
-//			}
-//		}
-//		/* естественный выход из цикла – в таблице нет элемента с ключом k */
-//		return -1;
-//	}
-//	virtual Polinom<Tn, Tp> FindPolinom(std::string polinom_name) {
-//		Item* cur, * prev;
-//		cur = ptab;
-//		/* проверяем, есть ли в таблице элементы */
-//		if (!cur)
-//			return -1; /* таблица пуста – отказ */
-//		/* возможно, требуется удалить первый элемент таблицы */
-//		if (cur.info.name == polinom_name) {
-//			/* удаляем первый элемент */
-//			ptab = cur->next;
-//			delete cur;
-//			return 0;
-//		}
-//		/* ищем удаляемый элемент среди других элементов таблицы */
-//		while (cur->next) { /* есть другие элементы */
-//			prev = cur;
-//			cur = cur->next;
-//			if (cur->key == k) {
-//				/* нашли элемент, который надо удалить */
-//				prev->next = cur->next;
-//				delete cur;
-//				return 0;
-//			}
-//		}
-//		/* естественный выход из цикла – в таблице нет элемента с ключомk */
-//		return -1;
-//	}
-//};
-//
-//int del1(int k) {
-//	Item* cur, * prev;
-//	cur = ptab;
-//	/* проверяем, есть ли в таблице элементы */
-//	if (!cur)
-//		return -1; /* таблица пуста – отказ */
-//	/* возможно, требуется удалить первый элемент таблицы */
-//	if (cur->key == k) {
-//		/* удаляем первый элемент */
-//		ptab = cur->next;
-//		delete cur;
-//		return 0;
-//	}
-//	/* ищем удаляемый элемент среди других элементов таблицы */
-//	while (cur->next) { /* есть другие элементы */
-//		prev = cur;
-//		cur = cur->next;
-//		if (cur->key == k) {
-//			/* нашли элемент, который надо удалить */
-//			prev->next = cur->next;
-//			delete cur;
-//			return 0;
-//		}
-//	}
-//	/* естественный выход из цикла – в таблице нет элемента с ключомk */
-//	return -1;
-//}
-//
-//
-//int del2(int k) {
-//	Item* cur, ** pptr;
-//	pptr = &ptab; /* указатель на указатель на первый элемент таблицы */
-//	/* ищем удаляемый элемент среди всех элементов таблицы */
-//	while (*pptr) { /* еще есть элементы */
-//		if ((*pptr)->key == k) {
-//			/* нашли элемент, который надо удалить */
-//			cur = *pptr; /* указатель на удаляемый элемент */
-//			*pptr = cur->next;
-//			Delete cur;
-//			return 0;
-//		}
-//		/* продвигаемся к следующему элементу таблицы */
-//		pptr = &(*pptr)->next;
-//	}
-//	/* естественный выход из цикла – в таблице нет элемента с ключомk */
-//	return-1;
-//}
-//
-//*/
+template<class T>
+bool ListTable<T>::Delete(std::string key)
+{
+	if (size == 0) return true;
+	Item<T>* tmp = first;
+	Item<T>* tmp_w = nullptr;
+	while (tmp != nullptr && tmp->info.key != key) {
+		tmp_w = tmp;
+		tmp = tmp->next;
+	}
+	if (tmp == nullptr) return 0;
+	if ((tmp == current) || (tmp == prev))  Reset();
+	if (tmp == first) {
+		if (first == current) { GoNext(); prev = nullptr; }
+		first = tmp->next;
+	}
+	if (tmp_w != nullptr) tmp_w->next = tmp->next;
+	delete tmp;
+	size--;
+}
+
+template<class T>
+T ListTable<T>::Find(std::string key)
+{
+	if (size == 0) throw "size=0";
+	Item<T>* tmp = first;
+	Item<T>* tmp_w = nullptr;
+	while (tmp != nullptr && tmp->info.key != key) {
+		tmp_w = tmp;
+		tmp = tmp->next;
+	}
+	if (tmp->info.key == key) return tmp->info.value;
+	throw "cant find";
+}
+
+template<class T>
+bool ListTable<T>::Exist(std::string key)
+{
+	if (size == 0) return false;
+	Item<T>* tmp = first;
+	Item<T>* tmp_w = nullptr;
+	while (tmp != nullptr && tmp->info.key != key) {
+		tmp_w = tmp;
+		tmp = tmp->next;
+	}
+	if (tmp == nullptr) return false;
+	return (tmp->info.key == key);
+}
+
+template<class T>
+ListTable<T> ListTable<T>::operator=(ListTable<T> other)
+{
+	Reset();
+	while (size != 0) { Delete(GetKey()); }
+	if (other.size == 0) return;
+	Item<T>* tmp = other.first;
+	while (size != other.size) {
+		Insert(tmp->info.key, tmp->info.value);
+		tmp = tmp->next;
+	}
+	return *this;
+}
+
+template<class T>
+bool ListTable<T>::operator==(ListTable<T>& other) const
+{
+	if (size != other.size) return false;
+	if (size == 0) return true;
+	Item<T>* tmp = other.first;
+	Item<T>* tmp2 = first;
+
+	while (tmp != nullptr) {
+		if (!(tmp->info == tmp2->info)) return false;
+		tmp = tmp->next;
+		tmp2 = tmp2->next;
+	}
+	return true;
+}

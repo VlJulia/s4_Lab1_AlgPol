@@ -1,41 +1,63 @@
 #pragma once
 #include <iostream>
-#include "..\polinom\TPolinom.h"
-template <class Tn, class Tp>
-struct  Polinom
+using namespace std;
+
+template <class T>
+struct  TRec//trec
 {
-	Tn name;
-	Tp* polinom;
+	T value; //polinom
+	string key; //name
+
+	TRec& operator=(TRec &other) {
+		key = other.key;
+		value = other.value;
+		return *this;
+	}
+
+	bool operator==(TRec other) { return (key == other.key); }
+	friend std::ostream& operator<<(std::ostream& os, TRec& p)
+	{
+		os << " Key: " << p.key <<  " val: " << p.value;
+		return os;
+	}
 };
 
 template <class T>
 class Table
 {
-protected: unsigned int size=0;//ГІГҐГЄГіГ№ГЁГ© Г°Г Г§Г¬ГҐГ°
-		 unsigned int max_data_count = 0;//Г±ГЄГ®Г«ГјГЄГ® ГўГ±ГҐГЈГ® Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј Г§Г ГЇГЁГ±ГҐГ©
+protected: unsigned int size=0;//текущий размер
+		 unsigned int max_data_count = 0;//сколько всего может быть записей
 public:
-	int GetDataCount()   const; // ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г§Г ГЇГЁГ±ГҐГ©
-	bool IsEmpty() const;  // ГЇГіГ±ГІГ ?
-	bool IsFull() const;                       // Г§Г ГЇГ®Г«Г­ГҐГ­Г ?
-	//Г­Г ГўГЁГЈГ Г¶ГЁГї 
-	virtual int Reset(void) = 0; // ГіГ±ГІГ Г­Г®ГўГЁГІГј Г­Г  ГЇГҐГ°ГўГіГѕ Г§Г ГЇГЁГ±Гј
-	virtual int IsTabEnded(void) const = 0; // ГІГ ГЎГ«ГЁГ¶Г  Г§Г ГўГҐГ°ГёГҐГ­Г ?
-	virtual int GoNext(void) = 0; // ГЇГҐГ°ГҐГµГ®Г¤ ГЄ Г±Г«ГҐГ¤ГіГѕГ№ГҐГ© Г§Г ГЇГЁГ±ГЁ
+	int GetDataCount()   const; // количество записей
+	bool IsEmpty() const;  // пуста?
+	bool IsFull() const;                       // заполнена?
+	//навигация 
+	virtual int Reset(void) = 0; // установить на первую запись
+	virtual int IsTabEnded(void) const = 0; // таблица завершена?
+	virtual int GoNext(void) = 0; // переход к следующей записи
 	virtual std::string GetKey(void) const = 0;
 	virtual T GetValuePtr(void) const = 0;
 	//
-	virtual bool Add(T obj)=0;
+	virtual bool Insert(string key, T obj)=0;
 	virtual bool Delete(std::string key)=0;
 	virtual T Find(std::string key)=0;
 	virtual bool Exist(std::string key)=0;
 
-	friend ostream& operator<<(ostream& os, Table& tab)
+public:
+	friend std::ostream& operator<<(std::ostream& os, Table& tab)
 	{
-		cout << "Table printing" << endl;
+		std::cout << "Table printing" << endl;
+		if (tab.IsEmpty()) {
+			return os;
+		}
 		for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
 		{
-			os << " Key: " << tab.GetKey() << " Val: " << *tab.GetValuePtr() << endl;
+			//std::cout << tab.GetValuePtr()<<endl;
+			os << tab.GetKey()<<" " << tab.GetValuePtr() << endl;
+			//std::cout << "end "<< tab.IsTabEnded();
 		}
+
+		if (!(tab.IsEmpty())) os << tab.GetKey() << " " << tab.GetValuePtr() << endl;
 		return os;
 	}
 };
@@ -45,7 +67,7 @@ int Table<T>::GetDataCount() const {
 };
 template <class T>
 bool Table<T>::IsEmpty() const {
-	return size == 0;
+	return (size == 0);
 }
 template<class T>
 bool Table<T>::IsFull() const
