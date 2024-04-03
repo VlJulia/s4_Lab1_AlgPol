@@ -196,7 +196,7 @@ void TList<T>::DeleteCurrent()
 		return;
 	
 	}
-
+	if (pFirst == pCurrent) pFirst = pCurrent->pNext;
 	TNode<T>* tmp = pCurrent->pNext;
 	pCurrent->pNext= tmp->pNext;
 	pCurrent->value = tmp->value;

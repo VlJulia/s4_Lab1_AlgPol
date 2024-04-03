@@ -45,6 +45,7 @@ public:
 	TPolinom operator/ (TPolinom other); // Деление полиномов без остатка (если отстаток, то будет исключение )
 	TPolinom operator/ (TMonom monom);
 	TPolinom operator/(double c); // деление полинома на число
+	TPolinom operator%(TPolinom other);
 
 	TPolinom derivative();//по всем переменным
 	friend void derivative(TPolinom& other) { other = other.derivative(); }//по всем переменным
@@ -113,12 +114,7 @@ void TPolinom::AddMonom(TMonom monom)
 	Reset();
 	for (int i = 0; i < length; i++) {
 		
-		if (GetCurrentItem().index < monom.index) {
-			if (IsEnd()) { InsertLast(monom); return; }
-			GoNext();
-			continue;
-		}
-		if (GetCurrentItem().index == monom.index) {
+		if (GetCurrentItem().CanSum(monom)) {
 			int newcoef = monom.coef + GetCurrentItem().coef;
 			if (newcoef == 0) {
 				DeleteCurrent();
@@ -127,7 +123,12 @@ void TPolinom::AddMonom(TMonom monom)
 			pCurrent->value.coef = newcoef;
 			return;
 		}
-		if (GetCurrentItem().index > monom.index) {
+		if (GetCurrentItem() < monom) {
+			if (IsEnd()) { InsertLast(monom); return; }
+			GoNext();
+			continue;
+		}
+		if (GetCurrentItem() > monom) {
 
 			InsertCurrent(monom);
 			
@@ -175,14 +176,10 @@ TPolinom TPolinom::MultMonom(TMonom monom)
 	TMonom m;
 	while (!IsEnd())
 	{
-		m.SetCoef(pCurrent->value.GetCoef() * monom.GetCoef());
-		m.SetIndex(pCurrent->value.index + monom.GetIndex());
-		SetCurrentItem(m);
+		SetCurrentItem(pCurrent->value * monom);
 		GoNext();
 	}
-		m.SetCoef(pCurrent->value.coef * monom.GetCoef());
-		m.SetIndex(pCurrent->value.index + monom.GetIndex());
-		SetCurrentItem(m);
+	SetCurrentItem(pCurrent->value * monom);
 	return *this;
 }
 
@@ -286,44 +283,39 @@ TPolinom TPolinom::SubPolinom(TPolinom& other) {
 
 TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 
-
-
 	if (other.IsEmpty()) return other;
 	if (IsEmpty()) return *this;
-
-	TPolinom tmp(other);
-	TPolinom cp(*this);
-	//std::cout << "cp is \n" << cp << endl;
+	ost = *this;
 	TMonom factor;
-	TMonom fmn(other.pFirst->value);
 	TPolinom ans;
-	other.Reset();
-	cp.Reset();
+	TPolinom tmp(other);
+	ost.Reset();
+	tmp.Reset();
 	int oper = 0;
 
+	//std::cout << "cp is \n" << cp << endl;
+	while (!ost.IsEmpty()) {//    this/other
+			/*std::cout << " ost " << ost.pLast->value << endl;
+			std::cout << " tmp " << tmp.pLast->value << endl;*/
 
-	while (!cp.IsEmpty()) {//    this/other
+		if (ost.pLast->value.x < tmp.pLast->value.x) {
+			break;
+		}
 
-		factor = (cp.GetCurrentItem() / fmn);
-
-		ans.AddMonom(factor);
-		if (factor.coef == 0) factor.coef = 1;
-		//cout << "\nafter operator cp\n" << cp << endl;
+		factor = ost.pLast->value / tmp.pLast->value;
 		//cout << "\nfactor\n" << factor << endl;
-
+		if (factor.coef == 0) { oper++; ost.DeleteCurrent(); continue; }
+		ans.AddMonom(factor);
 		tmp.MultMonom(factor);
-		cp.SubPolinom(tmp);
-
+		//cout << "tmp\n" << tmp << endl;
+		ost.SubPolinom(tmp);
+		//cout << "\ost\n" << ost << endl;
 		tmp = other;
-		//cout << "\noperator tmp\n" << tmp << endl;
 		oper++;
-		if (oper > (other.length + 5)) break;
+		ost.Reset();
 	}
-
-
-	ost = cp;
+	std::cout << "ans is " << ans;
 	return ans;
-
 }
 
 double TPolinom::calculate(double X, double Y, double Z)
@@ -343,7 +335,6 @@ TPolinom TPolinom::SubMonom(TMonom monom) {
 	a *= -1;
 	monom.SetCoef(a);
 	this->AddMonom(monom);
-	
 	return *this;
 };
 
@@ -353,13 +344,16 @@ TPolinom TPolinom::operator/(TPolinom other)
 	TPolinom tmp;
 	TPolinom ans(*this);
 	ans.Division(other, tmp);
-
-	if (!tmp.IsEmpty()) {
-		throw "impossible division operation without remainder";
-	}
 	return ans;
 }
 
+TPolinom TPolinom::operator%(TPolinom other)
+{
+	TPolinom tmp;
+	TPolinom ans(*this);
+	ans.Division(other, tmp);
+	return tmp;
+}
 TPolinom TPolinom::operator/(TMonom monom)
 {
 

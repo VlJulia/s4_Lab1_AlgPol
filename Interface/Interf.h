@@ -229,8 +229,8 @@ template<class T>
 T Interf<T>::Div(string key1, string key2) //с остатком
 {
 	T p1, p2;
-		p1 = current->Find(key1);
-		p2 = current->Find(key2);
+	p1 = current->Find(key1);
+	p2 = current->Find(key2);
 	T ost;
 	p1 = p1.T::Division(p2,ost);
 	std::cout << "res is " << p1 << " ost is" << ost<<endl;

@@ -167,8 +167,8 @@ T ListTable<T>::Find(std::string key)
 		tmp_w = tmp;
 		tmp = tmp->next;
 	}
+	if (tmp==nullptr) throw "cant find";
 	if (tmp->info.key == key) return tmp->info.value;
-	throw "cant find";
 }
 
 template<class T>

@@ -3,8 +3,8 @@
 using namespace std;
 int main()
 {
-    /*
-    TPolinom p("3X3Y3Z3 - 2X2Y2Z2 + 1XYZ");
+    
+    TPolinom p("3X3Y3Z3 - 2X2Y2Z2 + 1XYZ + XYZ");
 
     TPolinom p2("XYZ");
     TPolinom p3;
@@ -31,13 +31,11 @@ int main()
             cout << s;
         }
     }
-    */
-    /*
-     TPolinom p3;
+    
 
+     cout << "\n p3\n" << p3 << endl;
 
      p3.AddMonom(TMonom(1, 9, 3, 4));
-     cout << "\n p3\n" << p3 << endl;
      p3.AddMonom(TMonom(1, 2, 9, 4));
      cout << "\n p3\n" << p3 << endl;
      p3.AddMonom(TMonom(1,2,3,4));
@@ -56,11 +54,9 @@ int main()
 
 
      //p.AddPolinom("3X4Y7Z8 - 6X1Y1Z1");
-     */
-    /*
+     
     char aaaaaaaa;
     cin >> aaaaaaaa;
     return 0;
-    */
     
 }
