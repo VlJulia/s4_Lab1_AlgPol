@@ -474,12 +474,12 @@ bool Tree<T>::Exist(std::string key) {
 			// right way
 			if (tmp == NULL) return false;
 			if (key > tmp->val.key) {
-				tmp = radix->RTrnode;
+				tmp = tmp->RTrnode;
 				continue;
 			}
 			//left way
 			if (key < tmp->val.key) {
-				tmp = radix->LTrnode;
+				tmp = tmp->LTrnode;
 				continue;
 			}
 			if (key == tmp->val.key) {

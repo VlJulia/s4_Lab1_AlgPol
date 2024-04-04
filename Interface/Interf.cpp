@@ -22,7 +22,7 @@ int hello() {
     cout << "10. Difference | Разность" << endl;
     cout << "11. Sum | Сложение" << endl;
     cout << "12. Division (with remainder) | Деление с остатком" << endl;
-
+    cout << "13. Calculate | Решить" << endl;
     cout << "0. Exit | Выход" << endl;
     try {
         cin >> a;
@@ -232,6 +232,23 @@ int main()
                 cout << "Wrong number" << endl;
                 break;
             }
+            break;
+        case 13:
+            //dif
+            cout << "\n\n\n $der_<var_name>(key) - derivative\n $int_<var_name>(key) - integral\n" << endl;
+            cout << "write the expression:\n" << endl;
+            cin >> sn;
+            int x, y, z;
+            cout.clear(); 
+            cin.clear();
+            cout << "X = ";    cin >> x;
+            cout << "\nY = "; cin >> y; 
+            cout << "\nZ = ";  cin >> z;
+            double r;
+            try {
+                r = tb.calculateEx(sn,x,y,z);
+            }
+            catch (...) { cout << "Error! wrong expression " << endl; }
             break;
         case 0: exit(0);
         default:

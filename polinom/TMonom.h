@@ -27,14 +27,15 @@ public:
 	TMonom operator*(TMonom other);
 	double calculate(double X=0, double Y = 0, double Z = 0);
 	bool operator==(TMonom& other) { 
-		return ((x==other.x)&&(y=other.y)&&(z=other.z) && (coef == other.coef));
+		return ((x==other.x)&&(y==other.y)&&(z==other.z) && (coef == other.coef));
 	}
 	bool CanSum(TMonom other) {
-		return ((x == other.x) && (y = other.y) && (z = other.z));
+
+		return ((x == other.x) && (y == other.y) && (z == other.z));
 	}
 	bool operator==(const TMonom& other) {
 		if (this == &other) return true;
-		return ((x == other.x) && (y = other.y) && (z = other.z) && (coef == other.coef));
+		return ((x == other.x) && (y == other.y) && (z == other.z) && (coef == other.coef));
 	}
 	bool operator>(const TMonom& other);
 
@@ -156,7 +157,7 @@ TMonom::TMonom(TMonom& other)
 	index = other.index;
 	x = other.x;
 	y = other.y;
-	z = other.x;
+	z = other.z;
 
 }
 
@@ -223,9 +224,9 @@ double TMonom::calculate(double X, double Y, double Z)
 {
 	if ((coef==0)||(X==0)||(Y==0)||(Z==0)) return 0.0;
 	double ob=1;
-	ob *= St(x,X);
-	ob *= St(y, Y);
-	ob *= St(z, Z);
+	if (x!=0) ob *= St(x,X);
+	if (y!=0) ob *= St(y, Y);
+	if (z!=0) ob *= St(z, Z);
 	ob *= coef;
 	return ob;
 }

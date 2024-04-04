@@ -7,6 +7,7 @@ set(polinom polinom) #Переменная с именем библиотеки
 set(testfiles testfiles)
 set(table table)
 set(Interface Interface)
+set(calculator calculator)
 
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE) #Создается переменная CMAKE_CONFIGURATION_TYPES со значением "Debug;Release" и меткой/разделом Configs, переменная сохраниется в специальном файле доступном из всех файлов,
@@ -27,6 +28,10 @@ add_subdirectory(testfiles)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Interface)
 add_subdirectory(Interface)
+
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/calculator)
+add_subdirectory(calculator)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/gtest)
 add_subdirectory(gtest)

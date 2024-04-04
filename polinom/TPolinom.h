@@ -87,7 +87,6 @@ TPolinom::TPolinom(string str)
 	int i = 0;
 	string s="";
 	while (i!=str.size()) {
-		//std::cout << s<<endl;
 		if ((str[i] == '-') || (str[i] == '+')) {
 			if (s != "") { 
 				//std::cout << "monom " << s << endl;
@@ -100,7 +99,6 @@ TPolinom::TPolinom(string str)
 		s += str[i++];
 	}
 	if (s != "") AddMonom(TMonom(s));
-
 }
 
 
@@ -314,7 +312,6 @@ TPolinom  TPolinom::Division(TPolinom& other, TPolinom& ost) {
 		oper++;
 		ost.Reset();
 	}
-	std::cout << "ans is " << ans;
 	return ans;
 }
 
@@ -383,7 +380,6 @@ TPolinom TPolinom::derivative()
 	TPolinom p;
 	for (int i = 0; i < length; i++) {
 		p.AddMonom(GetCurrentItem().derivative());
-		cout << GetCurrentItem()<<"  "<< GetCurrentItem().derivative() << endl;
 		GoNext();
 	}
 	return p;
@@ -394,7 +390,6 @@ TPolinom TPolinom::derivative(char md)
 	TPolinom p;
 	for (int i = 0; i < length; i++) {
 		p.AddMonom(GetCurrentItem().derivative(md));
-		cout << GetCurrentItem() << "  " << GetCurrentItem().derivative(md) << endl;
 		GoNext();
 	}
 	return p;

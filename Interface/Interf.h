@@ -8,6 +8,7 @@
 #include "orderedArrayTable.h"
 #include "unorderedArrayTable.h"
 #include "TPolinom.h"
+#include "../calculator/calculator.h"
 
 using namespace std;
 const int n = 6;
@@ -19,7 +20,7 @@ class Interf {
 	int cur = 0;
 	int size;
 	int m_key_size = 0;
-
+	TCalculator<T> c;
 	public:
 	Interf(int s=0) {
 		size = s;
@@ -30,6 +31,8 @@ class Interf {
 		tbl_array[4] = new unorderedArrayTable<T>(s);
 		tbl_array[5] = new orderedArrayTable<T>(s);
 		current = tbl_array[cur];
+		c.SetData(current);
+
 	}
 	int NextTabl() { 
 		cur = (cur + 1) % n; 
@@ -58,7 +61,7 @@ class Interf {
 	T Div(string key1, string key2);
 	T Sum(string key1, string key2);
 	T Dif(string key1, string key2);
-	
+	double calculateEx(string expr, double x, double y, double z);
 	void SetTree() {
 		cur = 0;
 		current = tbl_array[cur];
@@ -316,6 +319,8 @@ inline T Interf<T>::Dif(string key1, string key2)
 	return res;
 }
 
+
+
 template<class T>
 inline void Interf<T>::calculate(string key1, double X, double Y, double Z)
 {
@@ -328,4 +333,19 @@ inline void Interf<T>::calculate(string key1, double X, double Y, double Z)
 	std::cout << "res is " << res << endl;
 	return;
 	
+}
+
+template<class T>
+double Interf<T>::calculateEx(string expr, double x, double y, double z)
+{
+	c.SetExpression(expr);
+	T ans = c.Calc(x, y, z);
+	double res = ans.calculate(x,y,z);
+	std::cout << "ans is " << ans <<  endl;
+	std::cout << expr<< " = " << res<< endl;
+	std::cout << "save ans? 0-no 1-yes" << endl; int otv = 0;
+	std::cin >> otv;
+	if (otv) AddDialog(ans);
+	return res;
+
 }

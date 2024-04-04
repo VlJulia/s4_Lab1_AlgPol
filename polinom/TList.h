@@ -149,11 +149,11 @@ void TList<T>::InsertCurrent(T item)
 		return;
 	}
 	if (pCurrent == pFirst) { InsertFirst(item); return; }
-	TNode<T>* tmp = pPrevious;
-	pPrevious = new TNode<T>();
-	pPrevious->value = item;
+	TNode<T>* tmp = new TNode<T>();
+	tmp->value = item;
+	tmp->pNext = pPrevious->pNext;
+	pPrevious = tmp;
 	pPrevious->pNext = pCurrent;
-	tmp->pNext = pPrevious;
 	length++;
 
 }
