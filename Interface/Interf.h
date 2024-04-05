@@ -61,6 +61,9 @@ class Interf {
 	T Div(string key1, string key2);
 	T Sum(string key1, string key2);
 	T Dif(string key1, string key2);
+	T MultDb(string key1, double b);
+	T DivDb(string key1, double b);
+
 	double calculateEx(string expr, double x, double y, double z);
 	void SetTree() {
 		cur = 0;
@@ -348,4 +351,30 @@ double Interf<T>::calculateEx(string expr, double x, double y, double z)
 	if (otv) AddDialog(ans);
 	return res;
 
+}
+
+template<class T>
+inline T Interf<T>::MultDb(string key1, double b)
+{
+	T p1;
+	p1 = current->Find(key1);
+	T res = p1 * b;
+	std::cout << "res is " << res << endl;
+	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
+	std::cin >> otv;
+	if (otv) AddDialog(res);
+	return res;
+}
+
+template<class T>
+inline T Interf<T>::DivDb(string key1, double b)
+{
+	T p1;
+	p1 = current->Find(key1);
+	T res = p1 / b;
+	std::cout << "res is " << res << endl;
+	std::cout << "save res? 0-no 1-yes" << endl; int otv = 0;
+	std::cin >> otv;
+	if (otv) AddDialog(res);
+	return res;
 }

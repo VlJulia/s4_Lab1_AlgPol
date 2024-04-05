@@ -27,7 +27,12 @@ public:
 		tb = a;
 	}
 	string GetExpression() { return infix; }
-	void SetExpression(string ex) { infix = ex+" "; }
+	void SetExpression(string ex) { 
+		infix = "";
+		for (char c : ex) { if (c != ' ') infix += c; }
+		infix +=" "; 
+	
+	}
 	string GetPostfix() { return postfix; }
 	void ToPostfix();
 	T CalcPostfix(double x = 0, double y = 0, double z = 0);
@@ -38,19 +43,6 @@ protected:
 	int Priority(string c);
 
 };
-//template<class T>
-//int TCalculator<T>::Priority(char c) {
-//	switch (c)
-//	{
-//	case ')':
-//	case '(': return 1;
-//	case '+':
-//	case '-': return 2;
-//	case '*':
-//	case '/': return 3;
-//	default: throw "unknow elem " + c;
-//	}
-//}
 template <class T>
 int TCalculator<T>::Priority(string c) { 
 
@@ -168,7 +160,7 @@ void TCalculator<T>::ToPostfix() {
 		{
 			size_t inx=0;
 			double tmp = stod(&infix[i], &inx);
-			//std::cout <<"\nSTOD inx "<< inx << endl;
+			//std::cout <<"\nSTOD inx "<< tmp << endl;
 			postfix += to_string(tmp)+" ";
 			i += inx;
 			continue;
@@ -180,6 +172,7 @@ void TCalculator<T>::ToPostfix() {
 	
 
 	while (!(sts.IsEmpty())) { postfix += sts.Pop(); }
+	//std::cout << "  --- " << postfix << endl;
 };
 template <class T >
 T TCalculator<T>::CalcPostfix(double x=0, double y=0, double z=0) {
@@ -213,7 +206,12 @@ T TCalculator<T>::CalcPostfix(double x=0, double y=0, double z=0) {
 			if (c.size() == 1) {
 				switch (c[0])
 				{
-				case'+': { st.Push(st.Pop() + st.Pop());  break; }
+				case'+': { 
+					TPolinom op2 = st.Pop();
+					TPolinom op1 = st.Pop();
+					st.Push(op1+op2); 
+					//std::cout << "  TOP "<<st.TopView() <<"  op1"<< op1<<"   op2"<<op2<< endl;
+					break; }
 				case'-': { 
 					TPolinom op2 = st.Pop();
 					TPolinom op1 = st.Pop();
@@ -256,6 +254,7 @@ T TCalculator<T>::CalcPostfix(double x=0, double y=0, double z=0) {
 		}
 		if (tb->Exist(tmp2)) {
 			st.Push((tb->Find(tmp2)));
+			//std::cout << "  find " << tb->Find(tmp2) << endl;
 			i = j;
 			c = tmp2;
 			continue;

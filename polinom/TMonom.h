@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <locale>
 class TMonom 
 {
 public:
@@ -92,7 +93,6 @@ TMonom::TMonom(string s) {
 		return; }
 	string str = s;
 	for (int i = 0; i < str.size(); i++) str[i] = ' ';
-
 	int tmp = 0;
 	for (int i = 0; i < s.size(); i++) {
 		switch (s[i])
@@ -102,12 +102,24 @@ TMonom::TMonom(string s) {
 		case 'z': { str[tmp++] = 'Z'; break; }
 		case '-': { str[tmp++] = s[i]; break; }
 		case '+': { str[tmp++] = s[i]; break; }
+		case '.': {
+			string tmp2(setlocale(LC_ALL, NULL));
+			if (tmp2 == "Russian_Russia.1251") str[tmp++] = ',';
+			else str[tmp++] = s[i];
+			break;
+		}
+		case ',': {
+			string tmp2(setlocale(LC_ALL, NULL));
+			if (tmp2 == "Russian_Russia.1251") str[tmp++] = s[i];
+			else str[tmp++] = '.';
+			break;
+		}
 		default:
 		if (((s[i] >= '0') && (s[i] <= '9')) || (s[i] == 'X') || (s[i] == 'Y') || (s[i] == 'Z')) str[tmp++] = s[i]; 
 		}
 	}
 	for (; tmp < s.size(); tmp++) str[tmp] = ' ';
-
+	//std::cout << "." << setlocale(LC_ALL, NULL) << "." << endl;
 	index = 0;
 	coef = 1;
 	int p = 1;//-coef or +
@@ -134,7 +146,7 @@ TMonom::TMonom(string s) {
 		if ((c >= '0') && (c <= '9')) {
 			size_t d = 0;
 			double a = stod(&str[i], &d);
-			
+			//std::cout << "   ddd " << a << endl;
 			if (t == 0) { coef = (p * a); t = -1; i += d; p = 1; continue; }
 
 			index += (a-1);

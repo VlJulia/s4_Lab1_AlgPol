@@ -83,8 +83,8 @@ void THeadList<T>::GoNext()
 		TList<T>::pPrevious = pHead;
 		return;
 	}
+	TList<T>::pPrevious = TList<T>::pCurrent;
 	TList<T>::pCurrent = TList<T>::pCurrent->pNext;
-	TList<T>::pPrevious = TList<T>::pPrevious->pNext;
 
 }
 

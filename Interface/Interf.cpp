@@ -23,6 +23,8 @@ int hello() {
     cout << "11. Sum | Сложение" << endl;
     cout << "12. Division (with remainder) | Деление с остатком" << endl;
     cout << "13. Calculate | Решить" << endl;
+    cout << "14.  Multiplication double | Умножение на double " << endl;
+    cout << "15.  Division double | Деление на double " << endl;
     cout << "0. Exit | Выход" << endl;
     try {
         cin >> a;
@@ -71,6 +73,8 @@ int main()
     char ch;
     
     do {
+        cin.clear();
+        cout.clear();
         f = hello();
         switch (f)
         {
@@ -83,8 +87,10 @@ int main()
             
             cout << "Enter name of polinom" << endl;
             cin >> sn;
+            sp = "";
             cout << "Enter polinom" << endl;
-            cin >> sp;
+            while (sp == "") getline(cin, sp);
+            std::cout << "sadasdsad" << sp<<endl;
             tb.Insert(sn, CreatePol(sp));
             break;
         case 3:
@@ -237,7 +243,9 @@ int main()
             //dif
             cout << "\n\n\n $der_<var_name>(key) - derivative\n $int_<var_name>(key) - integral\n" << endl;
             cout << "write the expression:\n" << endl;
-            cin >> sn;
+            sn = ""; 
+            //cin >> sn;
+            while (sn=="") getline(cin, sn);
             int x, y, z;
             cout.clear(); 
             cin.clear();
@@ -250,6 +258,34 @@ int main()
             }
             catch (...) { cout << "Error! wrong expression " << endl; }
             break;
+        case 14: {
+            //mult double
+            double a;
+            cout << "Select polinom from table" << endl;
+            cout << "Enter name of 1 polinom" << endl;
+            cin >> sn;
+            cout << "Enter double "<< endl;
+            cin >> a;
+            try {
+                cout << tb.MultDb(sn, a ) << endl;
+            }
+            catch (...) { cout << "cant find key " << endl; }
+            break;
+        }
+        case 15: {
+            //div double
+            double a;
+            cout << "Select polinom from table" << endl;
+            cout << "Enter name of 1 polinom" << endl;
+            cin >> sn;
+            cout << "Enter double " << endl;
+            cin >> a;
+            try {
+                cout << tb.DivDb(sn, a) << endl;
+            }
+            catch (...) { cout << "cant find key " << endl; }
+            break;
+        }
         case 0: exit(0);
         default:
             cout << "Wrong number" << endl;

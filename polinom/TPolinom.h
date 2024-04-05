@@ -98,6 +98,7 @@ TPolinom::TPolinom(string str)
 		}
 		s += str[i++];
 	}
+	//std::cout << "monom " << s << endl;
 	if (s != "") AddMonom(TMonom(s));
 }
 
@@ -129,7 +130,7 @@ void TPolinom::AddMonom(TMonom monom)
 		if (GetCurrentItem() > monom) {
 
 			InsertCurrent(monom);
-			
+			//std::cout << " insert l " << *this << endl;
 			return;
 		}
 	}
@@ -320,6 +321,7 @@ double TPolinom::calculate(double X, double Y, double Z)
 	if (IsEmpty())	return 0.0;
 	double s = 0;
 	for (int i = 0; i < length; i++) {
+		//std::cout << *this << endl;
 		s += GetCurrentItem().calculate(X, Y, Z);
 		GoNext();
 	}
@@ -418,20 +420,22 @@ TPolinom TPolinom::integral()
 TPolinom TPolinom::operator+(TPolinom other)
 {
 	if (other.IsEmpty()) return *this;
-	//std::cout << "Other " << other<<endl;
 	if (this->IsEmpty()) return other;
 
 	if (length >= other.length) {
 		TPolinom* tmp = new TPolinom(*this);
-		//std::cout << "   +  tmp 1  " << *tmp ;
 	other.Reset();
+	tmp->Reset();
+
+	//std::cout << "    tmp " << other.GetCurrentItem() << endl;
+
 	while (!other.IsEnd()) {
 		tmp->AddMonom(other.GetCurrentItem());
-		//std::cout << "   +  tmp "  << *tmp ;
 		other.GoNext();
+		//std::cout << "  4444" << endl;
 	}
+
 	tmp->AddMonom(other.GetCurrentItem());
-	//std::cout << "   +  tmp r  " << *tmp;
 	return *tmp;
 	}
 	else return (other + *this);

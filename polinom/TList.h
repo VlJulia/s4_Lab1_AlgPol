@@ -144,6 +144,7 @@ void TList<T>::InsertLast(T item)
 template <class T>
 void TList<T>::InsertCurrent(T item)
 {
+
 	if (length == 0) {
 		InsertFirst(item);
 		return;
@@ -151,7 +152,8 @@ void TList<T>::InsertCurrent(T item)
 	if (pCurrent == pFirst) { InsertFirst(item); return; }
 	TNode<T>* tmp = new TNode<T>();
 	tmp->value = item;
-	tmp->pNext = pPrevious->pNext;
+	tmp->pNext = pCurrent;
+	pPrevious->pNext = tmp;
 	pPrevious = tmp;
 	pPrevious->pNext = pCurrent;
 	length++;
